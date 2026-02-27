@@ -2,30 +2,29 @@ import { CheckCircle2, ChevronDown, ChevronRight, Milestone, Target, TrendingUp,
 import { maskCurrency, maskPhone } from "@/provider/helpers";
 import { stepTitles } from "@/provider/data";
 import { useStepForms } from "@/hooks/use-step-forms";
-
-export default function FormSteps() {
-  const {
-    step,
-    highestStep,
-    register,
-    handleSubmit,
-    onSubmitForm,
-    errors,
-    isSubmitting,
-    founderFields,
-    appendFounder,
-    removeFounder,
-    formValues,
-    setValue,
-    handleNextStep,
-    prevStep,
-    jumpToStep,
-  } = useStepForms()
-
+import { Button } from "./button";
+type FormStepsProps = ReturnType<typeof useStepForms>
+export default function FormSteps({
+  step,
+  highestStep,
+  register,
+  handleSubmit,
+  onSubmitForm,
+  errors,
+  isSubmitting,
+  founderFields,
+  appendFounder,
+  removeFounder,
+  formValues,
+  setValue,
+  handleNextStep,
+  prevStep,
+  jumpToStep,
+}: FormStepsProps) {
   return (
     <div className="w-full h-full min-h-0 grid grid-rows-[auto_auto_auto_1fr_auto] bg-slate-900 border border-slate-700 rounded-3xl shadow-[0_0_100px_rgba(6,182,212,0.15)] overflow-hidden animate-in slide-in-from-bottom-8">
-      <div className="flex justify-between items-center p-6 border-b border-slate-800 bg-slate-950 transition-colors group">
-        <h2 className="text-2xl font-black text-white flex items-center gap-3 transition-colors group-hover:text-cyan-400">
+      <div className="flex justify-between items-center p-6 border-b border-slate-800 bg-slate-950 transition-colors ">
+        <h2 className="text-2xl font-black text-white flex items-center gap-3 transition-colors hover:text-cyan-400">
           <Target className="w-6 h-6 text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.5)] animate-in zoom-in delay-100" />{" "}
           Avaliação MoVe
         </h2>
@@ -324,9 +323,11 @@ export default function FormSteps() {
                   {errors.capital && <p className="text-red-400 text-xs mt-1">{errors.capital.message}</p>}
                 </div>
                 <div>
-                  <label className="block text-sm text-slate-300 mb-2 font-bold">Equity na mão dos Founders (%)</label>
+                  <label className="block text-sm text-slate-300 mb-2 font-bold">Equity Founders (%)</label>
                   <input
-                    type="text"
+                    type="number"
+                    max={100}
+                    maxLength={3}
                     {...register("equity")}
                     className={`w-full bg-[#030712] border ${errors.equity ? "border-red-500" : "border-slate-700 focus:border-cyan-500"
                       } rounded-xl px-5 py-3.5 text-white focus:outline-none font-bold`}
@@ -342,33 +343,33 @@ export default function FormSteps() {
 
       <div className="p-6 border-t border-slate-800 flex justify-between bg-slate-950 shadow-inner transition-colors">
         {step > 1 ? (
-          <button
+          <Button
             type="button"
             onClick={prevStep}
             disabled={isSubmitting}
             className="px-6 py-3 text-slate-300 hover:text-white font-bold transition-all rounded-xl hover:bg-slate-800 active:scale-90 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Voltar
-          </button>
+          </Button>
         ) : (
           <div></div>
         )}
 
         {step < 4 ? (
-          <button
+          <Button
             type="button"
             onClick={handleNextStep}
             disabled={isSubmitting}
-            className="flex items-center gap-3 bg-white text-slate-950 px-9 py-3 rounded-xl font-black text-lg hover:bg-slate-200 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-3 bg-cyan-600! text-slate-950 px-9 py-3 rounded-xl font-black text-lg hover:bg-cyan-200! transition-all! active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Avançar <ChevronRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-          </button>
+          </Button>
         ) : (
-          <button
+          <Button
             type="button"
             onClick={handleSubmit(onSubmitForm)}
             disabled={isSubmitting}
-            className="flex items-center gap-3 bg-cyan-500 text-slate-950 px-9 py-3 rounded-xl font-black text-lg hover:bg-cyan-400 transition-all shadow-lg hover:shadow-[0_8px_30px_rgba(6,182,212,0.4)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-3 bg-green-500! text-slate-950 px-9 py-3 rounded-xl font-black text-lg hover:bg-cyan-400 transition-all shadow-lg hover:shadow-[0_8px_30px_rgba(6,182,212,0.4)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting ? "Enviando..." : "Concluir"}
             {isSubmitting ? (
@@ -376,7 +377,7 @@ export default function FormSteps() {
             ) : (
               <CheckCircle2 className="w-5 h-5 animate-pulse" />
             )}
-          </button>
+          </Button>
         )}
       </div>
     </div>

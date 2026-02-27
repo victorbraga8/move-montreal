@@ -9,23 +9,27 @@ import Fit from './components/ui/fit';
 import Footer from './components/ui/footer';
 import { useStepForms } from './hooks/use-step-forms';
 import MainDialog from './components/generics/dialog';
+import { Toaster } from "@/components/ui/sonner"
 
 export default function App() {
-  const { isModalOpen, setIsModalOpen } = useStepForms()
+  const stepForms = useStepForms()
   return (
-    <>
-      <div className="min-h-screen bg-[#030712] text-slate-50 font-sans selection:bg-cyan-500 selection:text-white relative overflow-x-hidden pb-20">
-        <MainBackground />
-        <Header setIsModalOpen={setIsModalOpen} />
-        <Hero setIsModalOpen={setIsModalOpen} />
-        <CtaCard />
-        <MoveTrack />
-        <Transformation />
-        <Timeline />
-        <Fit />
-        <Footer setIsModalOpen={setIsModalOpen} />
-        <MainDialog isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
-      </div>
-    </>
-  );
+    <div className="min-h-screen bg-[#030712] text-slate-50 font-sans selection:bg-cyan-500 selection:text-white relative overflow-x-hidden pb-20">
+      <MainBackground />
+      <Header setIsModalOpen={stepForms.setIsModalOpen} />
+      <Hero setIsModalOpen={stepForms.setIsModalOpen} />
+      <CtaCard />
+      <MoveTrack />
+      <Transformation />
+      <Timeline />
+      <Fit />
+      <Footer setIsModalOpen={stepForms.setIsModalOpen} />
+      <MainDialog
+        isModalOpen={stepForms.isModalOpen}
+        setIsModalOpen={stepForms.setIsModalOpen}
+        stepForms={stepForms}
+      />
+      <Toaster />
+    </div>
+  )
 }
