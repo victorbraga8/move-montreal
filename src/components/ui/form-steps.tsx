@@ -1,152 +1,25 @@
-import React, { useState, useEffect } from "react";
-import { CheckCircle2, ChevronDown, ChevronRight, Lightbulb, Milestone, Target, TrendingUp, Users, X, Briefcase, Lock, Check, Plus, Trash2 } from "lucide-react";
-import { useForm, useFieldArray } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import toast from "react-hot-toast";
-import { useStepForms } from "../../hooks/use-step-forms";
-
-const maskPhone = (value: string) => {
-  let v = value.replace(/\D/g, '');
-  if (v.length > 11) v = v.slice(0, 11);
-  if (v.length > 2) v = v.replace(/^(\d{2})(\d)/g, '($1) $2');
-  if (v.length > 7) v = v.replace(/(\d)(\d{4})$/, '$1-$2');
-  return v;
-};
-
-const maskCurrency = (value: string) => {
-  let v = value.replace(/\D/g, '');
-  if (v === '') return '';
-  v = (parseInt(v, 10) / 100).toFixed(2) + '';
-  v = v.replace(".", ",");
-  v = v.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
-  return `R$ ${v}`;
-};
-
-const founderSchema = z.object({
-  name: z.string().min(3, "Nome muito curto"),
-  email: z.string().email("E-mail inválido"),
-  phone: z.string().min(14, "Telefone incompleto"),
-  linkedin: z.string().url("URL inválida").or(z.literal('')),
-});
-
-const formSchema = z.object({
-  startupName: z.string().min(2, "Obrigatório"),
-  founders: z.array(founderSchema).min(1).max(3, "Máximo de 3 founders permitidos"),
-  model: z.enum(['B2B', 'B2C', 'B2B2C']),
-  stage: z.enum(['Ideia', 'MVP', 'Tracao']),
-  mrr: z.string().optional(),
-  challenge: z.string().min(20, "Detalhe um pouco mais o problema (mín. 20 caracteres)"),
-  teamSize: z.enum(['1-5', '6-15', '16+']),
-  fullTime: z.enum(['Sim', 'Nao']),
-  capital: z.string().min(4, "Informe o valor"),
-  equity: z.string().min(1, "Obrigatório"),
-}).superRefine((data, ctx) => {
-  if (data.stage === 'Tracao' && (!data.mrr || data.mrr.length < 4)) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "MRR é obrigatório para startups com Tração",
-      path: ['mrr']
-    });
-  }
-});
-
-type FormData = z.infer<typeof formSchema>;
+import { CheckCircle2, ChevronDown, ChevronRight, Milestone, Target, TrendingUp, Users, X, Briefcase, Lock, Check, Plus, Trash2 } from "lucide-react";
+import { maskCurrency, maskPhone } from "@/provider/helpers";
+import { stepTitles } from "@/provider/data";
+import { useStepForms } from "@/hooks/use-step-forms";
 
 export default function FormSteps(setIsModalOpen: any) {
-
-  const [step, setStep] = useState(1);
-  const [highestStep, setHighestStep] = useState(1);
-  const stepTitles = ["Identificação", "O Negócio", "Operação", "Captação"];
-
-  const stepFields: Record<number, (keyof FormData)[]> = {
-    1: ['startupName', 'founders'],
-    2: ['model', 'stage', 'mrr', 'challenge'],
-    3: ['teamSize', 'fullTime'],
-    4: ['capital', 'equity'],
-  };
-
-  const { register, control, handleSubmit, trigger, watch, setValue, reset, formState: { errors, isSubmitting } } = useForm<FormData>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      founders: [{ name: '', email: '', phone: '', linkedin: '' }],
-      model: 'B2B',
-      stage: 'Ideia',
-      teamSize: '1-5',
-      fullTime: 'Sim',
-    }
-  });
-
-  const { fields: founderFields, append: appendFounder, remove: removeFounder } = useFieldArray({
-    control,
-    name: "founders"
-  });
-
-  const formValues = watch();
-
-  useEffect(() => {
-    const savedDraft = localStorage.getItem('@moveTrackDraft');
-    const savedStep = localStorage.getItem('@moveTrackStep');
-    const savedHighest = localStorage.getItem('@moveTrackHighestStep');
-
-    if (savedDraft) reset(JSON.parse(savedDraft));
-    if (savedStep) setStep(parseInt(savedStep, 10));
-    if (savedHighest) setHighestStep(parseInt(savedHighest, 10));
-  }, [reset]);
-
-  useEffect(() => {
-    if (formValues.startupName || (formValues.founders && formValues.founders[0]?.name)) {
-      localStorage.setItem('@moveTrackDraft', JSON.stringify(formValues));
-      localStorage.setItem('@moveTrackStep', step.toString());
-      localStorage.setItem('@moveTrackHighestStep', highestStep.toString());
-    }
-  }, [formValues, step, highestStep]);
-
-  const handleNextStep = async () => {
-    const isStepValid = await trigger(stepFields[step]);
-    if (isStepValid) {
-      const next = step + 1;
-      setStep(next);
-      if (next > highestStep) setHighestStep(next);
-    } else {
-      toast.error("Preencha os campos obrigatórios corretamente.");
-    }
-  };
-
-  const prevStep = () => setStep((prev) => prev - 1);
-
-  const jumpToStep = async (targetStep: number) => {
-    if (targetStep < step) {
-      setStep(targetStep);
-    } else if (targetStep <= highestStep) {
-      const isCurrentStepValid = await trigger(stepFields[step]);
-      if (isCurrentStepValid) {
-        setStep(targetStep);
-      } else {
-        toast.error("Corrija os erros antes de avançar.");
-      }
-    }
-  };
-
-  const onSubmitForm = async (data: FormData) => {
-    const finalData = { ...data };
-    if (finalData.stage !== 'Tracao') delete finalData.mrr;
-
-    console.log("=== PAYLOAD ENVIADO PARA A API ===", JSON.stringify(finalData, null, 2));
-
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    toast.success("Inscrição concluída com sucesso!", { duration: 4000 });
-
-    localStorage.removeItem('@moveTrackDraft');
-    localStorage.removeItem('@moveTrackStep');
-    localStorage.removeItem('@moveTrackHighestStep');
-
-    reset();
-    setStep(1);
-    setHighestStep(1);
-    setIsModalOpen(false);
-  };
+  const {
+    step,
+    highestStep,
+    register,
+    handleSubmit,
+    onSubmitForm,
+    errors,
+    isSubmitting,
+    founderFields,
+    appendFounder,
+    removeFounder,
+    formValues,
+    setValue,
+    handleNextStep,
+    prevStep,
+    jumpToStep } = useStepForms();
 
   return (
     <div
