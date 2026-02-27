@@ -1,26 +1,17 @@
 import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog"
 import FormSteps from "../ui/form-steps";
-
-
-interface ModalProps {
-  isModalOpen: boolean;
-  setIsModalOpen: (value: boolean) => void;
-}
+import type { ModalProps } from "@/types";
 
 export default function MainDialog({ isModalOpen, setIsModalOpen }: ModalProps) {
   return (
     <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
       <DialogOverlay className="bg-[#030712]/90 backdrop-blur-md" />
-
       <DialogContent
-        className="
-          bg-transparent shadow-none border-0 p-0 outline-none
-          w-[96vw] sm:w-[92vw] lg:w-[1100px] xl:w-[1200px]
-          max-w-[1200px]
+        className="bg-transparent shadow-none border-0 p-0 outline-none
+          w-[96vw] sm:w-[92vw] lg:w-275 xl:w-300
+          max-w-300
           h-[92vh] sm:h-[92vh]
-          overflow-hidden
-        "
-      >
+          overflow-hidden">
         <FormSteps />
       </DialogContent>
     </Dialog>

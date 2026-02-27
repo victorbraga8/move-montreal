@@ -49,10 +49,10 @@ export default function FormSteps() {
               >
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border-2 transition-colors duration-300 ${isActive
-                      ? "bg-cyan-500 border-cyan-500 text-slate-950 shadow-[0_0_15px_rgba(6,182,212,0.5)]"
-                      : isCompleted
-                        ? "bg-cyan-950 border-cyan-500 text-cyan-400"
-                        : "bg-slate-900 border-slate-700 text-slate-500"
+                    ? "bg-cyan-500 border-cyan-500 text-slate-950 shadow-[0_0_15px_rgba(6,182,212,0.5)]"
+                    : isCompleted
+                      ? "bg-cyan-950 border-cyan-500 text-cyan-400"
+                      : "bg-slate-900 border-slate-700 text-slate-500"
                     }`}
                 >
                   {isCompleted && !isActive ? <Check className="w-4 h-4" /> : stepNumber}

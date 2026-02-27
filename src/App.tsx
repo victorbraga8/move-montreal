@@ -25,7 +25,6 @@ export default function App() {
         <Fit />
         <Footer setIsModalOpen={setIsModalOpen} />
         <MainDialog isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
-        {/* {isModalOpen && <FormSteps setIsModalOpen={setIsModalOpen} />} */}
       </div>
     </>
   );
