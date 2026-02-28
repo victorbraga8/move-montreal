@@ -1,5 +1,5 @@
 import { CheckCircle2, ChevronDown, ChevronRight, Milestone, Target, TrendingUp, Users, X, Briefcase, Lock, Check, Plus, Trash2 } from "lucide-react";
-import { maskCurrency, maskPhone } from "@/provider/helpers";
+import { maskCurrency, maskPercent, maskPhone } from "@/provider/helpers";
 import { stepTitles } from "@/provider/data";
 import { useStepForms } from "@/hooks/use-step-forms";
 import { Button } from "./button";
@@ -325,10 +325,10 @@ export default function FormSteps({
                 <div>
                   <label className="block text-sm text-slate-300 mb-2 font-bold">Equity Founders (%)</label>
                   <input
-                    type="number"
-                    max={100}
-                    maxLength={3}
+                    type="text"
+                    inputMode="numeric"
                     {...register("equity")}
+                    onChange={(e) => setValue("equity", maskPercent(e.target.value), { shouldValidate: true })}
                     className={`w-full bg-[#030712] border ${errors.equity ? "border-red-500" : "border-slate-700 focus:border-cyan-500"
                       } rounded-xl px-5 py-3.5 text-white focus:outline-none font-bold`}
                     placeholder="Ex: 85"

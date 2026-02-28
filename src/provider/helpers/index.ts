@@ -14,3 +14,10 @@ export const maskCurrency = (value: string) => {
   v = v.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
   return `R$ ${v}`;
 };
+
+export function maskPercent(raw: string): number {
+  const digits = raw.replace(/[^\d]/g, "").slice(0, 3)
+  if (!digits) return 0
+  const n = parseInt(digits, 10)
+  return n > 100 ? 100 : n
+}

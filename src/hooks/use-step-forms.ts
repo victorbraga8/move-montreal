@@ -22,7 +22,7 @@ export function useStepForms() {
     clearErrors,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema) as any,
     mode: "onChange",
     reValidateMode: "onChange",
     defaultValues: {
@@ -31,9 +31,13 @@ export function useStepForms() {
       stage: "Ideia",
       teamSize: "1-5",
       fullTime: "Sim",
+      startupName: "",
+      challenge: "",
+      mrr: "",
+      capital: "",
+      equity: 0,
     },
-  })
-
+  });
   const { fields: founderFields, append: appendFounder, remove: removeFounder } = useFieldArray({
     control,
     name: "founders",
@@ -156,7 +160,7 @@ export function useStepForms() {
         challenge: "",
         mrr: "",
         capital: "",
-        equity: '0',
+        equity: 0,
       })
 
       setStep(1)
