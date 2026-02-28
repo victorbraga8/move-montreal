@@ -11,6 +11,7 @@ export function useStepForms() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [step, setStep] = useState(1)
   const [highestStep, setHighestStep] = useState(1)
+  const [loadingStage, setLoadingStage] = useState<"idle" | "ai" | "crm" | "done">("idle")
 
   const {
     register,
@@ -35,10 +36,16 @@ export function useStepForms() {
       startupName: "",
       challenge: "",
       mrr: "",
+      acv: "",
+      mau: "",
+      hasRaised: "Nao",
+      raisedAmount: "",
+      investors: "",
       capital: "",
       equity: 0,
     },
   });
+
   const { fields: founderFields, append: appendFounder, remove: removeFounder } = useFieldArray({
     control,
     name: "founders",
@@ -69,7 +76,12 @@ export function useStepForms() {
       clearErrors("mrr")
       setValue("mrr", "", { shouldDirty: true, shouldValidate: false })
     }
-  }, [formValues.stage, clearErrors, setValue])
+    if (formValues.hasRaised !== "Sim") {
+      clearErrors("raisedAmount")
+      setValue("raisedAmount", "", { shouldDirty: true, shouldValidate: false })
+      setValue("investors", "", { shouldDirty: true, shouldValidate: false })
+    }
+  }, [formValues.stage, formValues.hasRaised, clearErrors, setValue])
 
   const handleNextStep = async () => {
     const isStepValid = await trigger(stepFields[step], { shouldFocus: true })
@@ -104,36 +116,35 @@ export function useStepForms() {
     try {
       const finalData = { ...data }
       if (finalData.stage !== "Tracao") delete finalData.mrr
+      if (finalData.hasRaised !== "Sim") {
+        delete finalData.raisedAmount
+        delete finalData.investors
+      }
 
-      console.log(
-        "=== PAYLOAD ENVIADO PARA A API ===",
-        JSON.stringify(finalData, null, 2)
-      )
+      setLoadingStage("ai")
 
       let analiseIA = "";
+      let scoreIA: number | null = null;
 
-      // ==========================================
-      // 1. ANÁLISE COM IA (GEMINI) - MODO VC IMPLACÁVEL
-      // ==========================================
       try {
-        console.log("🧠 Processando análise executiva com IA...");
         const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-
         if (!apiKey) throw new Error("Chave VITE_GEMINI_API_KEY ausente.");
 
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
         const prompt = `
-          Você é um analista sênior e pragmático de Venture Capital avaliando startups para um comitê de financiamento.
-          Sua análise deve ser FIRME, realista, crítica, direta ao ponto e sem floreios. O seu objetivo é triar os candidatos, apontar falhas lógicas e economizar o tempo dos investidores.
+          Você é um analista sênior, implacável e pragmático de Venture Capital avaliando startups para o programa de aceleração MoVe.
+          Sua análise deve ser EXTREMAMENTE FIRME, realista, crítica, direta ao ponto e sem qualquer tipo de floreio ou otimismo infundado. 
+          O seu objetivo principal é triar os candidatos com rigor, apontar falhas lógicas no modelo de negócio, avaliar se a matemática do valuation faz sentido e proteger o capital e o tempo dos investidores.
 
           DADOS DA STARTUP:
           - Nome: ${finalData.startupName}
-          - Modelo: ${finalData.model}
+          - Modelo: ${finalData.model} ${finalData.model === 'B2B' && finalData.acv ? `(ACV: ${finalData.acv})` : ''} ${finalData.model === 'B2C' && finalData.mau ? `(MAU: ${finalData.mau})` : ''}
           - Estágio: ${finalData.stage}
           - Tamanho do Time: ${finalData.teamSize} (Dedicação exclusiva: ${finalData.fullTime})
           - Captação Desejada: ${finalData.capital} em troca de ${finalData.equity}% de equity
+          - Histórico de Captação: ${finalData.hasRaised === 'Sim' ? `Já captou ${finalData.raisedAmount} (Investidores: ${finalData.investors || 'Não informado'})` : 'Bootstrapped (Nunca captou)'}
           - MRR atual (Receita): ${finalData.mrr || "Não possui / Pré-receita"}
           - Fundadores: ${finalData.founders.map(f => f.name).join(", ")}
           
@@ -142,59 +153,55 @@ export function useStepForms() {
           
           ESTRUTURE SUA RESPOSTA EXATAMENTE COM OS TÓPICOS ABAIXO USANDO MARKDOWN:
 
-          ### 📝 1. Resumo Executivo
-          (Máximo de 3 linhas resumindo o core business e o que a empresa busca de forma objetiva).
+          📊 SCORE: [SUA NOTA AQUI]/10
 
-          ### 🟢 2. Oportunidades (Por que isso pode dar certo)
-          (Liste de 1 a 3 pontos fortes realistas em bullet points. Se não houver, seja sincero e diga que os diferenciais são fracos).
-
-          ### 🔴 3. Riscos e Red Flags (Por que isso vai falhar)
-          (Seja extremamente crítico. Avalie a ingenuidade da proposta, falhas de mercado, dependências, risco do tamanho do time vs. estágio, etc. Use bullet points).
-
-          ### 💰 4. Análise do Deal e Valuation
-          (Cruze o estágio atual com o capital pedido e o equity oferecido. O fundador está pedindo muito dinheiro para um estágio muito inicial? A diluição está alta demais? Faça a matemática do valuation pré-money e diga se faz sentido).
-
-          ### 🎯 5. Parecer de Triagem
-          (Veredito claro. Inicie com uma destas três opções: [APROVAR PARA PITCH], [DILIGÊNCIA NECESSÁRIA] ou [DESCARTAR]. Justifique o motivo da decisão em uma frase forte).
-
-          ### 📊 6. Score de Viabilidade: [SUA NOTA AQUI]/10
-          (Dê uma nota fria de 0 a 10 baseada exclusivamente na atratividade do negócio para um fundo de investimento realista, considerando risco, maturidade e valuation).
+          📝 1. Resumo Executivo
+          🟢 2. Oportunidades
+          ⚠️ 3. Riscos e Red Flags
+          💰 4. Análise do Deal e Valuation
+          🎯 5. Parecer de Triagem
         `;
 
         const result = await model.generateContent(prompt);
         analiseIA = result.response.text();
 
-        console.log("✅ === ANÁLISE DA IA CONCLUÍDA ===\n", analiseIA);
-
+        const scoreMatch = analiseIA.match(/SCORE:\s*(\d+)/i);
+        if (scoreMatch && scoreMatch[1]) {
+          scoreIA = Number(scoreMatch[1]);
+        }
       } catch (iaError) {
-        console.error("❌ Falha ao gerar análise da IA (mas o fluxo continuará):", iaError);
         analiseIA = "Análise da IA indisponível no momento devido a um erro de comunicação com o servidor.";
       }
 
-      // ==========================================
-      // 2. ENVIO PARA O AIRTABLE
-      // ==========================================
-      try {
-        console.log("🚀 Enviando dados para o Airtable...");
+      setLoadingStage("crm")
 
-        // Formata o array de fundadores para um texto legível
+      try {
         const fundadoresTexto = finalData.founders
           .map(f => `${f.name} (${f.email} | ${f.phone} | ${f.linkedin || 'Sem LinkedIn'})`)
           .join("\n");
 
+        const modeloExpandido = `${finalData.model} ${finalData.model === 'B2B' && finalData.acv ? `- ACV: ${finalData.acv}` : finalData.model === 'B2C' && finalData.mau ? `- MAU: ${finalData.mau}` : ''}`;
+        const capitalExpandido = `${finalData.capital} ${finalData.hasRaised === 'Sim' ? `(Já captou antes: ${finalData.raisedAmount})` : '(Primeira captação)'}`;
+
+        const fieldsPayload: any = {
+          "Startup": finalData.startupName,
+          "Modelo": modeloExpandido,
+          "Estágio": finalData.stage,
+          "Capital": capitalExpandido,
+          "Equity": Number(finalData.equity),
+          "Fundadores": fundadoresTexto,
+          "Desafio": finalData.challenge,
+          "Análise IA": analiseIA
+        };
+
+        if (scoreIA !== null) {
+          fieldsPayload["Score"] = scoreIA;
+        }
+
         const airtableBody = {
           records: [
             {
-              fields: {
-                "Startup": finalData.startupName,
-                "Modelo": finalData.model,
-                "Estágio": finalData.stage,
-                "Capital": finalData.capital,
-                "Equity": Number(finalData.equity),
-                "Fundadores": fundadoresTexto,
-                "Desafio": finalData.challenge,
-                "Análise IA": analiseIA
-              }
+              fields: fieldsPayload
             }
           ]
         };
@@ -211,20 +218,15 @@ export function useStepForms() {
         });
 
         if (!response.ok) {
-          const erroDetalhado = await response.json();
-          console.error("❌ Erro detalhado do Airtable:", erroDetalhado);
           throw new Error("Falha ao salvar no Airtable");
         }
-
-        console.log("✅ === SALVO NO AIRTABLE COM SUCESSO ===");
       } catch (airtableError) {
-        console.error("❌ Erro no envio para o Airtable:", airtableError);
         throw airtableError;
       }
 
-      // ==========================================
-      // 3. SUCESSO E LIMPEZA DA TELA
-      // ==========================================
+      setLoadingStage("done")
+      await new Promise(resolve => setTimeout(resolve, 800))
+
       toast.success("Inscrição enviada!", {
         description: "Tudo certo — recebemos sua inscrição e iniciaremos a avaliação.",
         position: "top-center",
@@ -269,6 +271,11 @@ export function useStepForms() {
         startupName: "",
         challenge: "",
         mrr: "",
+        acv: "",
+        mau: "",
+        hasRaised: "Nao",
+        raisedAmount: "",
+        investors: "",
         capital: "",
         equity: 0,
       })
@@ -285,6 +292,7 @@ export function useStepForms() {
         },
       })
     } finally {
+      setLoadingStage("idle")
       setIsModalOpen(false)
     }
   }
@@ -294,6 +302,7 @@ export function useStepForms() {
     setIsModalOpen,
     step,
     highestStep,
+    loadingStage,
     register,
     handleSubmit,
     onSubmitForm,

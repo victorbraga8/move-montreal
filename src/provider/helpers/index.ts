@@ -21,3 +21,17 @@ export function maskPercent(raw: string): number {
   const n = parseInt(digits, 10)
   return n > 100 ? 100 : n
 }
+
+
+export const MAX_CAPITAL_CENTS = 30000000;
+
+export function currencyToCents(value: string) {
+  return Number(value.replace(/\D/g, ""));
+}
+
+export function centsToCurrency(value: number) {
+  return (value / 100).toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+}

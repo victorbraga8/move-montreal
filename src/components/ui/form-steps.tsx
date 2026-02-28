@@ -1,12 +1,15 @@
 import { CheckCircle2, ChevronDown, ChevronRight, Milestone, Target, TrendingUp, Users, X, Briefcase, Lock, Check, Plus, Trash2 } from "lucide-react";
-import { maskCurrency, maskPercent, maskPhone } from "@/provider/helpers";
+import { centsToCurrency, currencyToCents, maskCurrency, maskPercent, maskPhone, MAX_CAPITAL_CENTS } from "@/provider/helpers";
 import { stepTitles } from "@/provider/data";
 import { useStepForms } from "@/hooks/use-step-forms";
 import { Button } from "./button";
+
 type FormStepsProps = ReturnType<typeof useStepForms>
+
 export default function FormSteps({
   step,
   highestStep,
+  loadingStage,
   register,
   handleSubmit,
   onSubmitForm,
@@ -22,7 +25,55 @@ export default function FormSteps({
   jumpToStep,
 }: FormStepsProps) {
   return (
-    <div className="w-full h-full min-h-0 grid grid-rows-[auto_auto_auto_1fr_auto] bg-slate-900 border border-slate-700 rounded-3xl shadow-[0_0_100px_rgba(6,182,212,0.15)] overflow-hidden animate-in slide-in-from-bottom-8">
+    <div className="relative w-full h-full min-h-0 grid grid-rows-[auto_auto_auto_1fr_auto] bg-slate-900 border border-slate-700 rounded-3xl shadow-[0_0_100px_rgba(6,182,212,0.15)] overflow-hidden animate-in slide-in-from-bottom-8">
+
+      {isSubmitting && (
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="bg-slate-900 border border-slate-700 p-8 rounded-3xl shadow-2xl flex flex-col gap-6 max-w-sm w-full mx-4">
+            <h3 className="text-xl font-bold text-white text-center mb-2">Processando Inscrição</h3>
+
+            <div className="flex flex-col gap-5">
+              <div className={`flex items-center gap-4 transition-opacity duration-500 ${loadingStage === 'ai' || loadingStage === 'crm' || loadingStage === 'done' ? 'opacity-100' : 'opacity-40'}`}>
+                {loadingStage === 'crm' || loadingStage === 'done' ? (
+                  <CheckCircle2 className="w-6 h-6 text-green-500 flex-shrink-0" />
+                ) : loadingStage === 'ai' ? (
+                  <div className="w-6 h-6 border-2 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin flex-shrink-0" />
+                ) : (
+                  <div className="w-6 h-6 border-2 border-slate-700 rounded-full flex-shrink-0" />
+                )}
+                <span className={`text-sm font-medium ${loadingStage === 'crm' || loadingStage === 'done' ? 'text-green-400' : loadingStage === 'ai' ? 'text-cyan-400 animate-pulse' : 'text-slate-500'}`}>
+                  Processando Informações
+                </span>
+              </div>
+
+              <div className={`flex items-center gap-4 transition-opacity duration-500 ${loadingStage === 'crm' || loadingStage === 'done' ? 'opacity-100' : 'opacity-40'}`}>
+                {loadingStage === 'done' ? (
+                  <CheckCircle2 className="w-6 h-6 text-green-500 flex-shrink-0" />
+                ) : loadingStage === 'crm' ? (
+                  <div className="w-6 h-6 border-2 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin flex-shrink-0" />
+                ) : (
+                  <div className="w-6 h-6 border-2 border-slate-700 rounded-full flex-shrink-0" />
+                )}
+                <span className={`text-sm font-medium ${loadingStage === 'done' ? 'text-green-400' : loadingStage === 'crm' ? 'text-cyan-400 animate-pulse' : 'text-slate-500'}`}>
+                  Sincronizando MoveTrack Flow
+                </span>
+              </div>
+
+              <div className={`flex items-center gap-4 transition-opacity duration-500 ${loadingStage === 'done' ? 'opacity-100' : 'opacity-40'}`}>
+                {loadingStage === 'done' ? (
+                  <CheckCircle2 className="w-6 h-6 text-green-500 flex-shrink-0 animate-in zoom-in" />
+                ) : (
+                  <div className="w-6 h-6 border-2 border-slate-700 rounded-full flex-shrink-0" />
+                )}
+                <span className={`text-sm font-medium ${loadingStage === 'done' ? 'text-green-400' : 'text-slate-500'}`}>
+                  Finalizando inscrição...
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex justify-between items-center p-6 border-b border-slate-800 bg-slate-950 transition-colors ">
         <h2 className="text-2xl font-black text-white flex items-center gap-3 transition-colors hover:text-cyan-400">
           <Target className="w-6 h-6 text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.5)] animate-in zoom-in delay-100" />{" "}
@@ -75,9 +126,7 @@ export default function FormSteps({
         ></div>
       </div>
 
-      {/* ROW 4: step header fixo + scroll só no conteúdo do step */}
       <div className="min-h-0 grid grid-rows-[auto_1fr] bg-slate-900">
-        {/* header do step (fixo) */}
         <div className="px-8 pt-8 pb-4">
           {step === 1 && (
             <h3 className="text-xl font-bold text-white border-b-2 border-cyan-500/50 pb-3 flex items-center gap-2">
@@ -104,7 +153,6 @@ export default function FormSteps({
           )}
         </div>
 
-        {/* scroll só no miolo */}
         <div className="px-8 pb-8 overflow-y-auto custom-scrollbar min-h-0 space-y-6">
           {step === 1 && (
             <div className="space-y-6 animate-in fade-in slide-in-from-left-4 duration-300">
@@ -196,7 +244,6 @@ export default function FormSteps({
                 </div>
               ))}
 
-              {/* quick action compacta */}
               {founderFields.length < 3 && (
                 <div className="flex justify-end">
                   <button
@@ -239,6 +286,31 @@ export default function FormSteps({
                   <ChevronDown className="w-5 h-5 text-slate-500 absolute right-4 top-[2.8rem] pointer-events-none" />
                 </div>
               </div>
+
+              {formValues.model === 'B2B' && (
+                <div className="animate-in slide-in-from-top-2 duration-300">
+                  <label className="block text-sm text-slate-300 mb-2 font-bold">Ticket Médio Anual (ACV)</label>
+                  <input
+                    type="text"
+                    {...register("acv")}
+                    onChange={(e) => setValue("acv", maskCurrency(e.target.value))}
+                    className="w-full bg-[#030712] border border-slate-700 focus:border-cyan-500 rounded-xl px-5 py-3.5 text-white focus:outline-none shadow-inner"
+                    placeholder="Ex: R$ 50.000,00"
+                  />
+                </div>
+              )}
+
+              {formValues.model === 'B2C' && (
+                <div className="animate-in slide-in-from-top-2 duration-300">
+                  <label className="block text-sm text-slate-300 mb-2 font-bold">Usuários Ativos Mensais (MAU)</label>
+                  <input
+                    type="text"
+                    {...register("mau")}
+                    className="w-full bg-[#030712] border border-slate-700 focus:border-cyan-500 rounded-xl px-5 py-3.5 text-white focus:outline-none shadow-inner"
+                    placeholder="Ex: 10.000"
+                  />
+                </div>
+              )}
 
               {formValues.stage === "Tracao" && (
                 <div className="animate-in zoom-in-95 duration-300 p-5 rounded-2xl bg-cyan-950/20 border border-cyan-800/50">
@@ -309,18 +381,77 @@ export default function FormSteps({
                   O MOVe Track investe até <strong className="text-white">R$ 300.000,00</strong>. Qual a sua necessidade?
                 </p>
               </div>
+
+              <div className="relative mb-6">
+                <label className="block text-sm text-slate-300 mb-2 font-bold">A startup já captou investimento antes?</label>
+                <select
+                  {...register("hasRaised")}
+                  className="w-full bg-[#030712] border border-slate-700 rounded-xl px-5 py-3.5 text-white focus:outline-none focus:border-cyan-500 appearance-none"
+                >
+                  <option value="Nao">Não, somos 100% Bootstrapped</option>
+                  <option value="Sim">Sim, já fizemos rodadas anteriores</option>
+                </select>
+                <ChevronDown className="w-5 h-5 text-slate-500 absolute right-4 top-[2.8rem] pointer-events-none" />
+              </div>
+
+              {formValues.hasRaised === 'Sim' && (
+                <div className="grid sm:grid-cols-2 gap-6 mb-6 p-5 rounded-2xl bg-slate-800/30 border border-slate-700/50 animate-in zoom-in-95 duration-300">
+                  <div>
+                    <label className="block text-xs text-slate-400 mb-2 font-bold">Total já captado</label>
+                    <input
+                      type="text"
+                      {...register("raisedAmount")}
+                      onChange={(e) => setValue("raisedAmount", maskCurrency(e.target.value))}
+                      className={`w-full bg-[#030712] border ${errors.raisedAmount ? "border-red-500" : "border-slate-700 focus:border-cyan-500"
+                        } rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none`}
+                      placeholder="Ex: R$ 500.000,00"
+                    />
+                    {errors.raisedAmount && <p className="text-red-400 text-xs mt-1">{errors.raisedAmount.message}</p>}
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-400 mb-2 font-bold">Principais Investidores</label>
+                    <input
+                      type="text"
+                      {...register("investors")}
+                      className="w-full bg-[#030712] border border-slate-700 focus:border-cyan-500 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none"
+                      placeholder="Ex: Bossa Nova, Anjos..."
+                    />
+                  </div>
+                </div>
+              )}
+
               <div className="grid sm:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm text-slate-300 mb-2 font-bold">Capital Buscado</label>
+                  <label className="block text-sm text-slate-300 mb-2 font-bold">
+                    Capital Buscado na rodada
+                  </label>
+
                   <input
                     type="text"
                     {...register("capital")}
-                    onChange={(e) => setValue("capital", maskCurrency(e.target.value))}
-                    className={`w-full bg-[#030712] border ${errors.capital ? "border-red-500" : "border-slate-700 focus:border-cyan-500"
+                    onChange={(e) => {
+                      const rawValue = e.target.value.replace(/\D/g, "");
+                      if (!rawValue) {
+                        setValue("capital", "", { shouldValidate: true });
+                        return;
+                      }
+
+                      const cents = currencyToCents(e.target.value);
+                      const limited = Math.min(cents, MAX_CAPITAL_CENTS);
+                      setValue("capital", centsToCurrency(limited), { shouldValidate: true });
+                    }}
+                    placeholder={centsToCurrency(MAX_CAPITAL_CENTS)}
+                    className={`w-full bg-[#030712] border ${errors.capital
+                      ? "border-red-500"
+                      : "border-slate-700 focus:border-cyan-500"
                       } rounded-xl px-5 py-3.5 text-white focus:outline-none font-bold`}
-                    placeholder="R$ 300.000,00"
                   />
-                  {errors.capital && <p className="text-red-400 text-xs mt-1">{errors.capital.message}</p>}
+
+                  {errors.capital && (
+                    <p className="text-red-400 text-xs mt-1">
+                      {errors.capital.message}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm text-slate-300 mb-2 font-bold">Equity Founders (%)</label>
@@ -360,7 +491,7 @@ export default function FormSteps({
             type="button"
             onClick={handleNextStep}
             disabled={isSubmitting}
-            className="flex items-center gap-3 bg-cyan-600! text-slate-950 px-9 py-3 rounded-xl font-black text-lg hover:bg-cyan-200! transition-all! active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-3 bg-cyan-600! text-slate-950 px-9 py-3 rounded-xl font-black text-lg hover:bg-cyan-400! transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed border-none"
           >
             Avançar <ChevronRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
           </Button>
@@ -369,7 +500,7 @@ export default function FormSteps({
             type="button"
             onClick={handleSubmit(onSubmitForm)}
             disabled={isSubmitting}
-            className="flex items-center gap-3 bg-green-500! text-slate-950 px-9 py-3 rounded-xl font-black text-lg hover:bg-cyan-400 transition-all shadow-lg hover:shadow-[0_8px_30px_rgba(6,182,212,0.4)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-3 bg-green-500 text-slate-950 px-9 py-3 rounded-xl font-black text-lg hover:bg-green-400 transition-all shadow-lg hover:shadow-[0_8px_30px_rgba(34,197,94,0.4)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed border-none"
           >
             {isSubmitting ? "Enviando..." : "Concluir"}
             {isSubmitting ? (
