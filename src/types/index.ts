@@ -14,3 +14,14 @@ export type ModalPropsMain = {
 }
 
 export type FormData = z.infer<typeof formSchema>;
+
+export type LoadingSubmitProps = {
+  loadingStage: "idle" | "ai" | "crm" | "done";
+};
+
+export interface TimelineProps {
+  stepTitles: string[],
+  jumpToStep: (st: number) => void,
+  highestStep: number,
+  step: number,
+}
