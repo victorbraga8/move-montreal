@@ -1,4 +1,4 @@
-import { CheckCircle2, ChevronDown, ChevronRight, Milestone, Target, TrendingUp, Users, X, Briefcase, Lock, Check, Plus, Trash2 } from "lucide-react";
+import { CheckCircle2, ChevronDown, ChevronRight, Milestone, Target, TrendingUp, Users, Briefcase, Lock, Check, Plus, Trash2 } from "lucide-react";
 import { centsToCurrency, currencyToCents, maskCurrency, maskPercent, maskPhone, MAX_CAPITAL_CENTS } from "@/provider/helpers";
 import { stepTitles } from "@/provider/data";
 import { useStepForms } from "@/hooks/use-step-forms";
