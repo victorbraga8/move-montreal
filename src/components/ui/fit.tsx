@@ -18,7 +18,7 @@ export default function Fit({ setIsModalOpen }: ModalProps) {
             Pronto para transformar <br />sua startup?
           </h2>
           <p className="mt-5 text-base md:text-lg text-slate-300/90 font-medium max-w-2xl mx-auto leading-relaxed">
-            Inscreva-se no MOVe Track e faça parte do programa que<br /> transforma ideias em negócios de verdade.
+            Inscreva-se no MOVE Track e faça parte do programa que<br /> transforma ideias em negócios de verdade.
           </p>
         </div>
 

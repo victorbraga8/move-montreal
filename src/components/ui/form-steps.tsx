@@ -77,7 +77,7 @@ export default function FormSteps({
       <div className="flex justify-between items-center p-6 border-b border-slate-800 bg-slate-950 transition-colors ">
         <h2 className="text-2xl font-black text-white flex items-center gap-3 transition-colors hover:text-cyan-400">
           <Target className="w-6 h-6 text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.5)] animate-in zoom-in delay-100" />{" "}
-          Avaliação MoVe
+          Avaliação MOVE
         </h2>
       </div>
 
@@ -500,7 +500,7 @@ export default function FormSteps({
             type="button"
             onClick={handleSubmit(onSubmitForm)}
             disabled={isSubmitting}
-            className="flex items-center gap-3 bg-green-500 text-slate-950 px-9 py-3 rounded-xl font-black text-lg hover:bg-green-400 transition-all shadow-lg hover:shadow-[0_8px_30px_rgba(34,197,94,0.4)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed border-none"
+            className="flex items-center gap-3 bg-green-500! text-slate-950 px-9 py-3 rounded-xl font-black text-lg hover:bg-green-400! transition-all shadow-lg hover:shadow-[0_8px_30px_rgba(34,197,94,0.4)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed border-none"
           >
             {isSubmitting ? "Enviando..." : "Concluir"}
             {isSubmitting ? (

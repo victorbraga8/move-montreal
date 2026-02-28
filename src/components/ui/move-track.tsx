@@ -4,7 +4,7 @@ export default function MoveTrack() {
   return (
     <section className="container mx-auto px-6 py-12 relative z-10">
       <div className="text-center mb-16 animate-in fade-in duration-500">
-        <h2 className="text-3xl md:text-4xl font-black text-white mb-4">MOVe Track: Transformação Intensiva</h2>
+        <h2 className="text-3xl md:text-4xl font-black text-white mb-4">MOVE Track: Transformação Intensiva</h2>
         <p className="text-slate-400 max-w-2xl mx-auto font-medium">Tudo o que sua startup precisa para atingir o próximo nível de maturidade e escala.</p>
       </div>
       <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
