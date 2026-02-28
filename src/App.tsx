@@ -14,7 +14,7 @@ import { Toaster } from "@/components/ui/sonner"
 export default function App() {
   const stepForms = useStepForms()
   return (
-    <div className="min-h-screen bg-[#030712] text-slate-50 font-sans selection:bg-cyan-500 selection:text-white relative overflow-x-hidden pb-20">
+    <div className="min-h-screen bg-[#030712] text-slate-50 font-sans selection:bg-cyan-500 selection:text-white relative overflow-x-hidden ">
       <MainBackground />
       <Header setIsModalOpen={stepForms.setIsModalOpen} />
       <Hero setIsModalOpen={stepForms.setIsModalOpen} />
@@ -22,8 +22,8 @@ export default function App() {
       <MoveTrack />
       <Transformation />
       <Timeline />
-      <Fit />
-      <Footer setIsModalOpen={stepForms.setIsModalOpen} />
+      <Fit setIsModalOpen={stepForms.setIsModalOpen} />
+      <Footer />
       <MainDialog
         isModalOpen={stepForms.isModalOpen}
         setIsModalOpen={stepForms.setIsModalOpen}

@@ -1,5 +1,6 @@
 import { ArrowRight, LayoutDashboard, Rocket, TrendingUp, Video } from "lucide-react";
 import type { ModalProps } from "../../types";
+import { Button } from "./button";
 
 export default function Hero({ setIsModalOpen }: ModalProps) {
   return (
@@ -23,10 +24,10 @@ export default function Hero({ setIsModalOpen }: ModalProps) {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 mb-12 justify-center lg:justify-start">
-            <button onClick={() => setIsModalOpen(true)} className="group flex justify-center items-center gap-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-lg px-8 py-4 rounded-2xl transition-all duration-300 shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] hover:-translate-y-1">
+            <Button onClick={() => setIsModalOpen(true)} className="group flex justify-center items-center gap-3 bg-cyan-500! hover:bg-cyan-400! text-slate-950 font-bold text-lg px-8 py-4 rounded-2xl transition-all duration-300 shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] hover:-translate-y-1">
               Avaliar minha Startup
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </button>
+            </Button>
           </div>
 
           {/* Social Proof */}
