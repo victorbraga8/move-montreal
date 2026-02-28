@@ -9,11 +9,11 @@ export default function LoadingSubmit({ loadingStage }: LoadingSubmitProps) {
         <div className="flex flex-col gap-5">
           <div className={`flex items-center gap-4 transition-opacity duration-500 ${loadingStage === 'ai' || loadingStage === 'crm' || loadingStage === 'done' ? 'opacity-100' : 'opacity-40'}`}>
             {loadingStage === 'crm' || loadingStage === 'done' ? (
-              <CheckCircle2 className="w-6 h-6 text-green-500 flex-shrink-0" />
+              <CheckCircle2 className="w-6 h-6 text-green-500 shrink-0" />
             ) : loadingStage === 'ai' ? (
-              <div className="w-6 h-6 border-2 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin flex-shrink-0" />
+              <div className="w-6 h-6 border-2 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin shrink-0" />
             ) : (
-              <div className="w-6 h-6 border-2 border-slate-700 rounded-full flex-shrink-0" />
+              <div className="w-6 h-6 border-2 border-slate-700 rounded-full shrink-0" />
             )}
             <span className={`text-sm font-medium ${loadingStage === 'crm' || loadingStage === 'done' ? 'text-green-400' : loadingStage === 'ai' ? 'text-cyan-400 animate-pulse' : 'text-slate-500'}`}>
               Processando Informações
@@ -21,11 +21,11 @@ export default function LoadingSubmit({ loadingStage }: LoadingSubmitProps) {
           </div>
           <div className={`flex items-center gap-4 transition-opacity duration-500 ${loadingStage === 'crm' || loadingStage === 'done' ? 'opacity-100' : 'opacity-40'}`}>
             {loadingStage === 'done' ? (
-              <CheckCircle2 className="w-6 h-6 text-green-500 flex-shrink-0" />
+              <CheckCircle2 className="w-6 h-6 text-green-500 shrink-0" />
             ) : loadingStage === 'crm' ? (
-              <div className="w-6 h-6 border-2 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin flex-shrink-0" />
+              <div className="w-6 h-6 border-2 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin shrink-0" />
             ) : (
-              <div className="w-6 h-6 border-2 border-slate-700 rounded-full flex-shrink-0" />
+              <div className="w-6 h-6 border-2 border-slate-700 rounded-full shrink-0" />
             )}
             <span className={`text-sm font-medium ${loadingStage === 'done' ? 'text-green-400' : loadingStage === 'crm' ? 'text-cyan-400 animate-pulse' : 'text-slate-500'}`}>
               Sincronizando MoveTrack Flow
@@ -33,9 +33,9 @@ export default function LoadingSubmit({ loadingStage }: LoadingSubmitProps) {
           </div>
           <div className={`flex items-center gap-4 transition-opacity duration-500 ${loadingStage === 'done' ? 'opacity-100' : 'opacity-40'}`}>
             {loadingStage === 'done' ? (
-              <CheckCircle2 className="w-6 h-6 text-green-500 flex-shrink-0 animate-in zoom-in" />
+              <CheckCircle2 className="w-6 h-6 text-green-500 shrink-0 animate-in zoom-in" />
             ) : (
-              <div className="w-6 h-6 border-2 border-slate-700 rounded-full flex-shrink-0" />
+              <div className="w-6 h-6 border-2 border-slate-700 rounded-full shrink-0" />
             )}
             <span className={`text-sm font-medium ${loadingStage === 'done' ? 'text-green-400' : 'text-slate-500'}`}>
               Finalizando inscrição...

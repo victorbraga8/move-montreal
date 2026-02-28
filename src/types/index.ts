@@ -25,3 +25,5 @@ export interface TimelineProps {
   highestStep: number,
   step: number,
 }
+
+export type FormStepsProps = ReturnType<typeof useStepForms>

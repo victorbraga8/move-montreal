@@ -252,7 +252,7 @@ export default function BodyForm({ step, register, errors, founderFields, append
         step === 4 && (
           <div className="space-y-5 sm:space-y-6 animate-in fade-in slide-in-from-right-4 duration-300" >
             <div className="bg-slate-800/50 p-4 sm:p-5 rounded-2xl border border-slate-700 flex items-start gap-3" >
-              <Lock className="w-5 h-5 text-cyan-400 mt-0.5 flex-shrink-0" />
+              <Lock className="w-5 h-5 text-cyan-400 mt-0.5 shrink-0" />
               <p className="text-sm text-slate-300 leading-relaxed" >
                 O MOVe Track investe até < strong className="text-white" > R$ 300.000,00 </strong>. Qual a sua necessidade?
               </p>

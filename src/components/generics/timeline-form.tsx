@@ -43,7 +43,7 @@ export default function TimelineForm({ stepTitles, highestStep, jumpToStep, step
         </div>
       </div>
 
-      <div className="hidden sm:block h-1 bg-slate-800 w-full relative shadow-inner overflow-hidden flex-shrink-0">
+      <div className="hidden sm:block h-1 bg-slate-800 w-full relative shadow-inner overflow-hidden shrink-0">
         <div
           className="absolute top-0 left-0 h-full bg-cyan-500 transition-all duration-500 ease-out shadow-[0_0_10px_rgba(6,182,212,0.8)]"
           style={{ width: `${(step / 4) * 100}%` }}
