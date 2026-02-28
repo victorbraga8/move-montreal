@@ -156,7 +156,7 @@ export function useStepForms() {
         challenge: "",
         mrr: "",
         capital: "",
-        equity: 0,
+        equity: '0',
       })
 
       setStep(1)
