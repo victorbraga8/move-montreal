@@ -7,11 +7,13 @@ export default function MainDialog({ stepForms }: ModalPropsMain) {
   return (
     <Dialog open={stepForms.isModalOpen} onOpenChange={stepForms.setIsModalOpen}>
       <DialogOverlay className="bg-[#030712]/90 backdrop-blur-md" />
+
       <DialogContent
         className="bg-transparent shadow-none border-0 p-0 outline-none
-        w-[96vw] sm:w-[92vw] lg:w-275 xl:w-300
-        max-w-300
-        h-[92vh] sm:h-[92vh]
+        w-full h-full max-h-[100dvh]
+        sm:w-[92vw] sm:max-w-4xl sm:h-[90vh]
+        fixed bottom-0 sm:top-[50%] sm:bottom-auto sm:-translate-y-1/2
+        rounded-none sm:rounded-3xl flex flex-col
         overflow-hidden"
       >
         <VisuallyHidden.Root>

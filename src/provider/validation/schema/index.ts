@@ -4,7 +4,9 @@ export const founderSchema = z.object({
   name: z.string().min(3, "Nome muito curto"),
   email: z.string().email("E-mail inválido"),
   phone: z.string().min(14, "Telefone incompleto"),
-  linkedin: z.string().url("URL inválida").or(z.literal('')),
+  linkedin: z.string().refine(val => val === '' || val.toLowerCase().includes('linkedin'), {
+    message: "Insira um link válido do LinkedIn"
+  }),
 });
 
 export const formSchema = z
@@ -23,10 +25,16 @@ export const formSchema = z
     raisedAmount: z.string().optional(),
     investors: z.string().optional(),
     capital: z.string().min(4),
-    equity: z.coerce
-      .number()
-      .min(0, "Mínimo 0%")
-      .max(100, "Máximo 100%"),
+    equity: z.preprocess(
+      (val) => {
+        if (typeof val === "string") {
+          const parsed = parseFloat(val.replace(",", "."));
+          return isNaN(parsed) ? 0 : parsed;
+        }
+        return Number(val);
+      },
+      z.number().min(0, "Mínimo 0%").max(100, "Máximo 100%")
+    ),
   })
   .superRefine((data, ctx) => {
     if (data.stage === "Tracao" && (!data.mrr || data.mrr.length < 4)) {

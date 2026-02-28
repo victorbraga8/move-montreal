@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner"
 import type { FormData } from "@/types";
 import { formSchema } from "@/provider/validation/schema";
-import { stepFields } from "@/provider/data";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export function useStepForms() {
@@ -12,6 +11,13 @@ export function useStepForms() {
   const [step, setStep] = useState(1)
   const [highestStep, setHighestStep] = useState(1)
   const [loadingStage, setLoadingStage] = useState<"idle" | "ai" | "crm" | "done">("idle")
+
+  const currentStepFields: Record<number, (keyof FormData)[]> = {
+    1: ["startupName", "founders"],
+    2: ["model", "stage", "mrr", "challenge", "acv", "mau"],
+    3: ["teamSize", "fullTime"],
+    4: ["hasRaised", "raisedAmount", "investors", "capital", "equity"],
+  };
 
   const {
     register,
@@ -25,7 +31,7 @@ export function useStepForms() {
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(formSchema) as any,
-    mode: "onChange",
+    mode: "all",
     reValidateMode: "onChange",
     defaultValues: {
       founders: [{ name: "", email: "", phone: "", linkedin: "" }],
@@ -58,18 +64,28 @@ export function useStepForms() {
     const savedStep = localStorage.getItem("@moveTrackStep")
     const savedHighest = localStorage.getItem("@moveTrackHighestStep")
 
-    if (savedDraft) reset(JSON.parse(savedDraft))
+    if (savedDraft) {
+      try {
+        reset(JSON.parse(savedDraft))
+      } catch (e) {
+        console.error("Erro ao recuperar rascunho", e)
+      }
+    }
     if (savedStep) setStep(parseInt(savedStep, 10))
     if (savedHighest) setHighestStep(parseInt(savedHighest, 10))
   }, [reset])
 
   useEffect(() => {
-    if (formValues.startupName || (formValues.founders && formValues.founders[0]?.name)) {
-      localStorage.setItem("@moveTrackDraft", JSON.stringify(formValues))
-      localStorage.setItem("@moveTrackStep", step.toString())
-      localStorage.setItem("@moveTrackHighestStep", highestStep.toString())
-    }
-  }, [formValues, step, highestStep])
+    localStorage.setItem("@moveTrackStep", step.toString())
+    localStorage.setItem("@moveTrackHighestStep", highestStep.toString())
+  }, [step, highestStep])
+
+  useEffect(() => {
+    const subscription = watch((value) => {
+      localStorage.setItem("@moveTrackDraft", JSON.stringify(value))
+    })
+    return () => subscription.unsubscribe()
+  }, [watch])
 
   useEffect(() => {
     if (formValues.stage !== "Tracao") {
@@ -84,7 +100,7 @@ export function useStepForms() {
   }, [formValues.stage, formValues.hasRaised, clearErrors, setValue])
 
   const handleNextStep = async () => {
-    const isStepValid = await trigger(stepFields[step], { shouldFocus: true })
+    const isStepValid = await trigger(currentStepFields[step], { shouldFocus: true })
     if (isStepValid) {
       const next = step + 1
       setStep(next)
@@ -103,7 +119,7 @@ export function useStepForms() {
     }
 
     if (targetStep <= highestStep) {
-      const isCurrentStepValid = await trigger(stepFields[step], { shouldFocus: true })
+      const isCurrentStepValid = await trigger(currentStepFields[step], { shouldFocus: true })
       if (isCurrentStepValid) {
         setStep(targetStep)
       } else {
@@ -230,7 +246,7 @@ export function useStepForms() {
       toast.success("Inscrição enviada!", {
         description: "Tudo certo — recebemos sua inscrição e iniciaremos a avaliação.",
         position: "top-center",
-        duration: 450000,
+        duration: 4500,
         style: {
           width: "min(92vw, 520px)",
           background: "linear-gradient(180deg, rgba(6,78,59,0.95) 0%, rgba(4,120,87,0.95) 100%)",
@@ -284,7 +300,7 @@ export function useStepForms() {
       setHighestStep(1)
 
     } catch (e) {
-      toast("Falha no envio", {
+      toast.error("Falha no envio", {
         description: "Não foi possível enviar agora. Tente novamente.",
         action: {
           label: "Fechar",

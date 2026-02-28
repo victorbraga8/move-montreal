@@ -15,11 +15,22 @@ export const maskCurrency = (value: string) => {
   return `R$ ${v}`;
 };
 
-export function maskPercent(raw: string): number {
-  const digits = raw.replace(/[^\d]/g, "").slice(0, 3)
-  if (!digits) return 0
-  const n = parseInt(digits, 10)
-  return n > 100 ? 100 : n
+export function maskPercent(value: string) {
+  let v = value.replace(".", ",");
+
+  v = v.replace(/[^\d,]/g, "");
+
+  const parts = v.split(",");
+  if (parts.length > 2) {
+    v = parts[0] + "," + parts.slice(1).join("");
+  }
+
+  const numericValue = parseFloat(v.replace(",", "."));
+  if (numericValue > 100) {
+    v = "100";
+  }
+
+  return v;
 }
 
 
