@@ -88,7 +88,7 @@ export const formSchema = z
     targetCustomer: z.string().min(6, "Explique quem é seu cliente-alvo (mín. 6 caracteres)"),
     painUrgency: z.string().min(20, "Explique a dor e urgência (mín. 20 caracteres)"),
     valueProp: z.string().min(20, "Explique sua proposta de valor (mín. 20 caracteres)"),
-    alternatives: z.string().min(15, "Explique as alternativas atuais (mín. 15 caracteres)"),
+    // alternatives: z.string().min(15, "Explique as alternativas atuais (mín. 15 caracteres)"),
 
     // Step 3 (mutável por Stage + Model)
     interviewsCount: z.string().optional(),

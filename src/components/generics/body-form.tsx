@@ -257,7 +257,7 @@ export default function BodyForm({
             <FieldError path="valueProp" />
           </div>
 
-          <div>
+          {/* <div>
             <label className={labelBase}>Alternativas atuais</label>
             <textarea
               {...register("alternatives")}
@@ -266,7 +266,7 @@ export default function BodyForm({
               placeholder="Ex: planilhas, concorrente X, processo manual, equipe interna..."
             />
             <FieldError path="alternatives" />
-          </div>
+          </div> */}
         </div>
       )}
 
@@ -428,16 +428,16 @@ export default function BodyForm({
 
                   <div>
                     <label className={labelBase}>ACV (ticket anual estimado)</label>
-                  <input
-                    type="text"
-                    {...register("acv")}
-                    onChange={(e) => setValue("acv", maskCurrency(e.target.value), { shouldValidate: true })}
-                    className={`${inputBase} ${errors?.acv ? "border-red-500" : ""}`}
-                    placeholder="Ex: R$ 50.000,00"
-                    inputMode="numeric"
-                  />
-                  <FieldError path="acv" />
-                </div>
+                    <input
+                      type="text"
+                      {...register("acv")}
+                      onChange={(e) => setValue("acv", maskCurrency(e.target.value), { shouldValidate: true })}
+                      className={`${inputBase} ${errors?.acv ? "border-red-500" : ""}`}
+                      placeholder="Ex: R$ 50.000,00"
+                      inputMode="numeric"
+                    />
+                    <FieldError path="acv" />
+                  </div>
                 </>
               )}
             </div>
