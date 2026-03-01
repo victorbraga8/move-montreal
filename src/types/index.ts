@@ -26,4 +26,6 @@ export interface TimelineProps {
   step: number,
 }
 
+export type AnyObj = Record<string, any>;
+
 export type FormStepsProps = ReturnType<typeof useStepForms>
