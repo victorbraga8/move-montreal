@@ -234,39 +234,28 @@ export default function BodyForm({
             />
             <FieldError path="targetCustomer" />
           </div>
-
-          <div>
-            <label className={labelBase}>Dor e urgência</label>
-            <textarea
-              {...register("painUrgency")}
-              rows={3}
-              className={`${inputBase} resize-none ${errors?.painUrgency ? "border-red-500" : ""}`}
-              placeholder="Ex: hoje eles perdem X horas/semana com..., ou têm perda direta de receita por..."
-            />
-            <FieldError path="painUrgency" />
+          <div className="grid md:grid-cols-2 gap-6 grid-cols-1">
+            <div>
+              <label className={labelBase}>Proposta de valor</label>
+              <textarea
+                {...register("valueProp")}
+                rows={3}
+                className={`${inputBase} resize-none ${errors?.valueProp ? "border-red-500" : ""}`}
+                placeholder="Ex: automatizamos..., reduzindo custo/tempo em..., sem precisar de..."
+              />
+              <FieldError path="valueProp" />
+            </div>
+            <div>
+              <label className={labelBase}>Dor e urgência</label>
+              <textarea
+                {...register("painUrgency")}
+                rows={3}
+                className={`${inputBase} resize-none ${errors?.painUrgency ? "border-red-500" : ""}`}
+                placeholder="Ex: hoje eles perdem X horas/semana com..., ou têm perda direta de receita por..."
+              />
+              <FieldError path="painUrgency" />
+            </div>
           </div>
-
-          <div>
-            <label className={labelBase}>Proposta de valor</label>
-            <textarea
-              {...register("valueProp")}
-              rows={3}
-              className={`${inputBase} resize-none ${errors?.valueProp ? "border-red-500" : ""}`}
-              placeholder="Ex: automatizamos..., reduzindo custo/tempo em..., sem precisar de..."
-            />
-            <FieldError path="valueProp" />
-          </div>
-
-          {/* <div>
-            <label className={labelBase}>Alternativas atuais</label>
-            <textarea
-              {...register("alternatives")}
-              rows={3}
-              className={`${inputBase} resize-none ${errors?.alternatives ? "border-red-500" : ""}`}
-              placeholder="Ex: planilhas, concorrente X, processo manual, equipe interna..."
-            />
-            <FieldError path="alternatives" />
-          </div> */}
         </div>
       )}
 
