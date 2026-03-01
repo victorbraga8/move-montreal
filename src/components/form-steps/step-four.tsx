@@ -1,7 +1,14 @@
 import type { AnyObj } from "@/types";
 import { ChevronDown } from "lucide-react";
 
-export default function StepFour({ labelBase, register, inputBase, errors, FieldError }: AnyObj) {
+export default function StepFour({
+  labelBase,
+  register,
+  inputBase,
+  errors,
+  FieldError,
+  teamComposition,
+}: AnyObj) {
   return (
     <div className="space-y-5 sm:space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -37,6 +44,24 @@ export default function StepFour({ labelBase, register, inputBase, errors, Field
         </div>
       </div>
 
+      {teamComposition && teamComposition !== "solo" && (
+        <div className="relative">
+          <label className={labelBase}>Tamanho do time (estimado)</label>
+          <select
+            {...register("teamSize")}
+            className="w-full bg-[#030712] border border-slate-700 rounded-xl px-4 sm:px-5 py-3 sm:py-3.5 text-white focus:outline-none focus:border-cyan-500 appearance-none"
+          >
+            <option value="2-3">2–3 pessoas</option>
+            <option value="4-6">4–6 pessoas</option>
+            <option value="7-10">7–10 pessoas</option>
+            <option value="11+">11+ pessoas</option>
+          </select>
+          <ChevronDown className="w-5 h-5 text-slate-500 absolute right-4 top-[2.4rem] pointer-events-none" />
+          <p className="text-xs text-slate-400 mt-1">Founders + equipe ativa hoje.</p>
+          <FieldError path="teamSize" />
+        </div>
+      )}
+
       <div>
         <label className={labelBase}>Gap de execução atual</label>
         <textarea
@@ -48,5 +73,5 @@ export default function StepFour({ labelBase, register, inputBase, errors, Field
         <FieldError path="executionBottleneck" />
       </div>
     </div>
-  )
+  );
 }

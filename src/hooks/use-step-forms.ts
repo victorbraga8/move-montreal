@@ -69,6 +69,7 @@ export function useStepForms() {
 
       weeklyDedication: "10-20",
       teamComposition: "solo",
+      teamSize: undefined as any,
       executionBottleneck: "",
 
       runwayMonths: "",
@@ -101,6 +102,10 @@ export function useStepForms() {
 
     const stage = formValues?.stage;
     const model = formValues?.model;
+
+    if (formValues?.teamComposition && formValues.teamComposition !== "solo") {
+      base[4] = ["weeklyDedication", "teamComposition", "teamSize", "executionBottleneck"];
+    }
 
     const s3: (keyof FormData)[] = [];
 
@@ -148,6 +153,13 @@ export function useStepForms() {
   useEffect(() => {
     localStorage.setItem(DRAFT_KEY, JSON.stringify(formValues));
   }, [formValues]);
+
+
+  useEffect(() => {
+    if (formValues?.teamComposition === "solo") {
+      setValue("teamSize" as any, undefined as any, { shouldValidate: false, shouldDirty: true });
+    }
+  }, [formValues?.teamComposition, setValue]);
 
   // Limpeza reativa por Stage + Model (evita sujeira de campo inválido)
   useEffect(() => {

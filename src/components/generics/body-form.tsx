@@ -47,7 +47,7 @@ export default function BodyForm({
       )}
 
       {step === 4 && (
-        <StepFour labelBase={labelBase} register={register} inputBase={inputBase} errors={errors} FieldError={FieldError} />
+        <StepFour labelBase={labelBase} register={register} inputBase={inputBase} errors={errors} FieldError={FieldError} teamComposition={formValues?.teamComposition} />
       )}
 
       {step === 5 && (
