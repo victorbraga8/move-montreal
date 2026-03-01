@@ -15,24 +15,41 @@ export const maskCurrency = (value: string) => {
   return `R$ ${v}`;
 };
 
-export function maskPercent(value: string) {
-  let v = value.replace(".", ",");
+export function maskPercent(value: string, maxDecimals: number = 2) {
+  const raw = value;
 
-  v = v.replace(/[^\d,]/g, "");
+  let v = value.replace(",", ".").replace(/[^\d.]/g, "");
 
-  const parts = v.split(",");
-  if (parts.length > 2) {
-    v = parts[0] + "," + parts.slice(1).join("");
+  const firstDot = v.indexOf(".");
+  if (firstDot !== -1) {
+    v = v.slice(0, firstDot + 1) + v.slice(firstDot + 1).replace(/\./g, "");
   }
 
-  const numericValue = parseFloat(v.replace(",", "."));
-  if (numericValue > 100) {
-    v = "100";
+  if (v === ".") return "0.";
+
+  const endsWithDot = raw.endsWith(".") || raw.endsWith(",");
+  let [intPart, decPart = ""] = v.split(".");
+
+  intPart = intPart.replace(/^0+(?=\d)/, "");
+
+  if (endsWithDot && decPart === "") {
+    const intNum = Number(intPart || "0");
+    const clampedInt = Math.min(Math.max(intNum, 0), 100);
+    return `${clampedInt}.`;
   }
 
-  return v;
+  decPart = decPart.slice(0, maxDecimals);
+
+  if (!intPart && !decPart) return "";
+
+  const num = Number(`${intPart || "0"}${decPart ? "." + decPart : ""}`);
+  if (!Number.isFinite(num)) return "";
+
+  const clamped = Math.min(Math.max(num, 0), 100);
+
+  const fixed = clamped.toFixed(maxDecimals);
+  return fixed.replace(/\.?0+$/, "");
 }
-
 
 export const MAX_CAPITAL_CENTS = 30000000;
 
@@ -58,3 +75,12 @@ export function maskInteger(value: string, maxDigits: number = 9) {
   if (!digits) return "";
   return new Intl.NumberFormat("pt-BR").format(Number(digits));
 }
+
+export function clampCurrency(value: string, maxCents: number) {
+  const cents = currencyToCents(value);
+  const clamped = Math.min(cents, maxCents);
+  return centsToCurrency(clamped);
+}
+
+export const CAPITAL_MAX_CENTS = MAX_CAPITAL_CENTS;
+export const capitalPlaceholder = `Ex: até ${centsToCurrency(CAPITAL_MAX_CENTS)}`;
