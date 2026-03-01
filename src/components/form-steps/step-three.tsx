@@ -2,7 +2,7 @@ import { maskCurrency, maskDigitsOnly, maskInteger, maskPercent } from "@/provid
 import type { AnyObj } from "@/types";
 import { ChevronDown } from "lucide-react";
 
-export default function StepThree({ labelBase, register, inputBase, errors, FieldError, setValue, stage, model }: AnyObj) {
+export default function StepThree({ labelBase, register, inputBase, errors, FieldError, setValue, stage, model, psfEvidence, pilotType }: AnyObj) {
   return (
     <div className="space-y-5 sm:space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
       {/* IDEIA */}
@@ -88,15 +88,15 @@ export default function StepThree({ labelBase, register, inputBase, errors, Fiel
             <FieldError path="psfEvidence" />
           </div>
 
-          {(model === "B2B" || model === "B2B2C") && (
+          {(model === "B2B" || model === "B2B2C") && (psfEvidence === "piloto_nao_pago" || psfEvidence === "piloto_pago") && (
             <>
               <div className="relative">
-                <label className={labelBase}>Tipo de piloto</label>
+                <label className={labelBase}>Status do piloto</label>
                 <select
                   {...register("pilotType")}
                   className="w-full bg-[#030712] border border-slate-700 rounded-xl px-4 sm:px-5 py-3 sm:py-3.5 text-white focus:outline-none focus:border-cyan-500 appearance-none"
                 >
-                  <option value="nao_iniciado">Ainda não iniciado</option>
+                  <option value="planejado">Planejado</option>
                   <option value="em_andamento">Em andamento</option>
                   <option value="concluido">Concluído</option>
                 </select>
@@ -105,12 +105,18 @@ export default function StepThree({ labelBase, register, inputBase, errors, Fiel
               </div>
 
               <div>
-                <label className={labelBase}>Resumo do piloto / aprendizado</label>
+                <label className={labelBase}>
+                  {pilotType === "planejado" ? "Objetivo do piloto (o que você pretende validar)" : "Resumo do piloto / aprendizado"}
+                </label>
                 <textarea
                   {...register("pilotSummary")}
                   rows={4}
                   className={`${inputBase} resize-none ${errors?.pilotSummary ? "border-red-500" : ""}`}
-                  placeholder="Ex: piloto com 2 empresas; validou dor X; principal ajuste foi Y..."
+                  placeholder={
+                    pilotType === "planejado"
+                      ? "Ex: validar disposição de pagamento (R$X/mês) e comprovar redução de tempo em 30% em 2–3 clientes."
+                      : "Ex: piloto com 2 empresas; validou dor X; principal ajuste foi Y..."
+                  }
                 />
                 <FieldError path="pilotSummary" />
               </div>

@@ -57,7 +57,7 @@ export function useStepForms() {
       audience: "",
 
       psfEvidence: "entrevistas",
-      pilotType: "nao_iniciado",
+      pilotType: "planejado",
       pilotSummary: "",
 
       acv: "",
@@ -112,10 +112,14 @@ export function useStepForms() {
 
     if (stage === "MVP") {
       s3.push("psfEvidence");
+      const psf = formValues?.psfEvidence;
       if (model === "B2C") {
         s3.push("mau", "primaryChannel");
       } else {
-        s3.push("icp", "pilotType", "pilotSummary", "acv");
+        s3.push("icp", "acv");
+        if (psf === "piloto_nao_pago" || psf === "piloto_pago") {
+          s3.push("pilotType", "pilotSummary");
+        }
       }
     }
 
@@ -128,7 +132,7 @@ export function useStepForms() {
 
     base[3] = s3;
     return base;
-  }, [formValues?.stage, formValues?.model]);
+  }, [formValues?.stage, formValues?.model, formValues?.psfEvidence]);
 
   useEffect(() => {
     const raw = localStorage.getItem(DRAFT_KEY);
@@ -156,7 +160,7 @@ export function useStepForms() {
 
     if (stage === "Ideia") {
       clear("psfEvidence", "entrevistas");
-      clear("pilotType", "nao_iniciado");
+      clear("pilotType", "planejado");
       clear("pilotSummary");
       clear("acv");
       clear("mau");
@@ -177,7 +181,7 @@ export function useStepForms() {
       clear("churn");
       if (model === "B2C") {
         clear("icp");
-        clear("pilotType", "nao_iniciado");
+        clear("pilotType", "planejado");
         clear("pilotSummary");
         clear("acv");
       } else {
@@ -190,12 +194,28 @@ export function useStepForms() {
       clear("validatedHypothesis");
       clear("ideaEvidence");
       clear("psfEvidence", "entrevistas");
-      clear("pilotType", "nao_iniciado");
+      clear("pilotType", "planejado");
       clear("pilotSummary");
       if (model === "B2C") clear("icp");
       else clear("audience");
     }
   }, [formValues?.stage, formValues?.model, setValue]);
+
+  // Limpeza reativa por PSF (piloto só existe quando evidência = piloto)
+  useEffect(() => {
+    if (formValues?.stage !== "MVP") return;
+    if (formValues?.model === "B2C") return;
+
+    const isPilotEvidence = formValues?.psfEvidence === "piloto_nao_pago" || formValues?.psfEvidence === "piloto_pago";
+    if (isPilotEvidence) return;
+
+    const clear = (k: keyof FormData, v: any = "") =>
+      setValue(k, v as any, { shouldValidate: false, shouldDirty: true });
+
+    clear("pilotType", "planejado");
+    clear("pilotSummary");
+  }, [formValues?.stage, formValues?.model, formValues?.psfEvidence, setValue]);
+
 
   const handleNextStep = async () => {
     const fields = currentStepFields[step] || [];
@@ -328,7 +348,7 @@ export function useStepForms() {
         icp: "",
         audience: "",
         psfEvidence: "entrevistas",
-        pilotType: "nao_iniciado",
+        pilotType: "planejado",
         pilotSummary: "",
         acv: "",
         mau: "",

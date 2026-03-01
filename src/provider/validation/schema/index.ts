@@ -40,7 +40,7 @@ const psfEvidenceEnum = z.enum([
   "usuarios_ativos",
 ]);
 
-const pilotTypeEnum = z.enum(["nao_iniciado", "em_andamento", "concluido"]);
+const pilotTypeEnum = z.enum(["planejado", "em_andamento", "concluido"]);
 
 const capitalUseSchema = z.object({
   produto: z.boolean().optional(),
@@ -269,20 +269,30 @@ export const formSchema = z
             message: "Informe o ACV (mesmo que estimado).",
           });
         }
-        if (!data.pilotType) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ["pilotType"],
-            message: "Informe o status do piloto.",
-          });
-        }
-        const needsPilot = data.psfEvidence?.startsWith("piloto") || data.pilotType !== "nao_iniciado";
-        if (needsPilot && (!data.pilotSummary || data.pilotSummary.trim().length < 40)) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ["pilotSummary"],
-            message: "Descreva o piloto/aprendizado (mín. 40 caracteres).",
-          });
+        const isPilotEvidence = data.psfEvidence === "piloto_nao_pago" || data.psfEvidence === "piloto_pago";
+
+        if (isPilotEvidence) {
+          if (!data.pilotType) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              path: ["pilotType"],
+              message: "Informe o status do piloto.",
+            });
+          }
+
+          const summaryMin = data.pilotType === "planejado" ? 30 : 40;
+          const summaryMsg =
+            data.pilotType === "planejado"
+              ? "Descreva o objetivo do piloto (mín. 30 caracteres)."
+              : "Descreva o piloto/aprendizado (mín. 40 caracteres).";
+
+          if (!data.pilotSummary || data.pilotSummary.trim().length < summaryMin) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              path: ["pilotSummary"],
+              message: summaryMsg,
+            });
+          }
         }
         if (!data.icp || data.icp.trim().length < 10) {
           ctx.addIssue({

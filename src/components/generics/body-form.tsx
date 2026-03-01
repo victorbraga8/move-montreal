@@ -43,7 +43,7 @@ export default function BodyForm({
       )}
 
       {step === 3 && (
-        <StepThree labelBase={labelBase} register={register} inputBase={inputBase} errors={errors} FieldError={FieldError} setValue={setValue} stage={stage} model={model} />
+        <StepThree labelBase={labelBase} register={register} inputBase={inputBase} errors={errors} FieldError={FieldError} setValue={setValue} stage={stage} model={model} psfEvidence={formValues?.psfEvidence} pilotType={formValues?.pilotType} />
       )}
 
       {step === 4 && (
