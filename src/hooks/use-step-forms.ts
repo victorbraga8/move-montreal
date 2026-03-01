@@ -1,24 +1,28 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner"
+import { toast } from "sonner";
 import type { FormData } from "@/types";
 import { formSchema } from "@/provider/validation/schema";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-export function useStepForms() {
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [step, setStep] = useState(1)
-  const [highestStep, setHighestStep] = useState(1)
-  const [loadingStage, setLoadingStage] = useState<"idle" | "ai" | "crm" | "done">("idle")
+type LoadingStage = "idle" | "ai" | "crm" | "done";
 
-  const currentStepFields: Record<number, (keyof FormData)[]> = {
-    1: ["startupName", "founders"],
-    2: ["model", "stage", "challenge"],
-    3: ["interviewsCount", "hypothesisValidated", "psfEvidence", "pilotType", "pilotDetails", "acv", "mau", "mrr", "growth3m", "churn"],
-    4: ["teamSize", "dedicationWeekly", "hasTechFounder", "hasBizFounder"],
-    5: ["runwayMonths", "capital", "equity", "capitalUse", "capitalPlan", "hasRaised", "raisedAmount", "investors"],
-  };
+const DRAFT_KEY = "@move:form:draft:v1";
+
+const emptyCapitalUse = {
+  produto: false,
+  gtm: false,
+  contratacao: false,
+  infra: false,
+  compliance: false,
+};
+
+export function useStepForms() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [step, setStep] = useState(1);
+  const [highestStep, setHighestStep] = useState(1);
+  const [loadingStage, setLoadingStage] = useState<LoadingStage>("idle");
 
   const {
     register,
@@ -28,43 +32,49 @@ export function useStepForms() {
     watch,
     setValue,
     reset,
-    clearErrors,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(formSchema) as any,
     mode: "all",
     reValidateMode: "onChange",
     defaultValues: {
+      startupName: "",
+      vertical: "AI",
+      verticalOther: "",
       founders: [{ name: "", email: "", phone: "", linkedin: "" }],
+
       model: "B2B",
       stage: "Ideia",
-      startupName: "",
-      challenge: "",
+      targetCustomer: "",
+      painUrgency: "",
+      valueProp: "",
+      alternatives: "",
 
       interviewsCount: "",
-      hypothesisValidated: "",
-      psfEvidence: undefined,
-      pilotType: undefined,
-      pilotDetails: "",
+      validatedHypothesis: "",
+      ideaEvidence: "",
+      icp: "",
+      audience: "",
+
+      psfEvidence: "entrevistas",
+      pilotType: "nao_iniciado",
+      pilotSummary: "",
 
       acv: "",
       mau: "",
       mrr: "",
       growth3m: "",
       churn: "",
+      primaryChannel: "",
 
-      teamSize: "1-5",
-      dedicationWeekly: "40+",
-      hasTechFounder: "Sim",
-      hasBizFounder: "Sim",
+      weeklyDedication: "10-20",
+      teamComposition: "solo",
+      executionBottleneck: "",
 
       runwayMonths: "",
-      hasRaised: "Nao",
-      raisedAmount: "",
-      investors: "",
       capital: "",
-      equity: 0,
-      capitalUse: [],
+      equity: "",
+      capitalUse: { ...emptyCapitalUse },
       capitalPlan: "",
     },
   });
@@ -72,333 +82,285 @@ export function useStepForms() {
   const { fields: founderFields, append: appendFounder, remove: removeFounder } = useFieldArray({
     control,
     name: "founders",
-  })
+  });
 
-  const formValues = watch()
+  const formValues = watch();
 
-  useEffect(() => {
-    const savedDraft = localStorage.getItem("@moveTrackDraft")
-    const savedStep = localStorage.getItem("@moveTrackStep")
-    const savedHighest = localStorage.getItem("@moveTrackHighestStep")
+  const stepTitles = useMemo(
+    () => ["Identificação", "Negócio", "Maturidade", "Operação", "Captação"],
+    []
+  );
 
-    if (savedDraft) {
-      try {
-        reset(JSON.parse(savedDraft))
-      } catch (e) {
-        console.error("Erro ao recuperar rascunho", e)
+  const currentStepFields = useMemo((): Record<number, (keyof FormData)[]> => {
+    const base: Record<number, (keyof FormData)[]> = {
+      1: ["startupName", "vertical", "verticalOther", "founders"],
+      2: ["model", "stage", "targetCustomer", "painUrgency", "valueProp", "alternatives"],
+      4: ["weeklyDedication", "teamComposition", "executionBottleneck"],
+      5: ["runwayMonths", "capital", "equity", "capitalUse", "capitalPlan"],
+    };
+
+    const stage = formValues?.stage;
+    const model = formValues?.model;
+
+    const s3: (keyof FormData)[] = [];
+
+    if (stage === "Ideia") {
+      s3.push("interviewsCount", "validatedHypothesis", "ideaEvidence");
+      if (model === "B2C") s3.push("audience");
+      else s3.push("icp");
+    }
+
+    if (stage === "MVP") {
+      s3.push("psfEvidence");
+      if (model === "B2C") {
+        s3.push("mau", "primaryChannel");
+      } else {
+        s3.push("icp", "pilotType", "pilotSummary", "acv");
       }
     }
-    if (savedStep) setStep(parseInt(savedStep, 10))
-    if (savedHighest) setHighestStep(parseInt(savedHighest, 10))
-  }, [reset])
+
+    if (stage === "Tracao") {
+      s3.push("mrr", "growth3m", "primaryChannel");
+      if (model === "B2C") s3.push("mau");
+      else s3.push("icp", "acv");
+      s3.push("churn");
+    }
+
+    base[3] = s3;
+    return base;
+  }, [formValues?.stage, formValues?.model]);
 
   useEffect(() => {
-    localStorage.setItem("@moveTrackStep", step.toString())
-    localStorage.setItem("@moveTrackHighestStep", highestStep.toString())
-  }, [step, highestStep])
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if (!raw) return;
+    try {
+      const draft = JSON.parse(raw);
+      reset(draft);
+    } catch {
+      // ignore
+    }
+  }, [reset]);
 
   useEffect(() => {
-    const subscription = watch((value) => {
-      localStorage.setItem("@moveTrackDraft", JSON.stringify(value))
-    })
-    return () => subscription.unsubscribe()
-  }, [watch])
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(formValues));
+  }, [formValues]);
 
+  // Limpeza reativa por Stage + Model (evita sujeira de campo inválido)
   useEffect(() => {
-    // Limpeza reativa por estágio
-    if (formValues.stage === "Ideia") {
-      clearErrors(["acv", "mau", "mrr", "growth3m", "churn", "psfEvidence", "pilotType", "pilotDetails"]);
-      setValue("acv", "", { shouldDirty: true, shouldValidate: false });
-      setValue("mau", "", { shouldDirty: true, shouldValidate: false });
-      setValue("mrr", "", { shouldDirty: true, shouldValidate: false });
-      setValue("growth3m", "", { shouldDirty: true, shouldValidate: false });
-      setValue("churn", "", { shouldDirty: true, shouldValidate: false });
-      setValue("psfEvidence", undefined as any, { shouldDirty: true, shouldValidate: false });
-      setValue("pilotType", undefined as any, { shouldDirty: true, shouldValidate: false });
-      setValue("pilotDetails", "", { shouldDirty: true, shouldValidate: false });
+    const stage = formValues?.stage;
+    const model = formValues?.model;
+
+    if (!stage || !model) return;
+
+    const clear = (k: keyof FormData, v: any = "") => setValue(k, v as any, { shouldValidate: false, shouldDirty: true });
+
+    if (stage === "Ideia") {
+      clear("psfEvidence", "entrevistas");
+      clear("pilotType", "nao_iniciado");
+      clear("pilotSummary");
+      clear("acv");
+      clear("mau");
+      clear("mrr");
+      clear("growth3m");
+      clear("churn");
+      clear("primaryChannel");
+      if (model === "B2C") clear("icp");
+      else clear("audience");
     }
 
-    if (formValues.stage === "MVP") {
-      clearErrors(["mrr", "growth3m", "churn"]);
-      setValue("mrr", "", { shouldDirty: true, shouldValidate: false });
-      setValue("growth3m", "", { shouldDirty: true, shouldValidate: false });
-      setValue("churn", "", { shouldDirty: true, shouldValidate: false });
+    if (stage === "MVP") {
+      clear("interviewsCount");
+      clear("validatedHypothesis");
+      clear("ideaEvidence");
+      clear("mrr");
+      clear("growth3m");
+      clear("churn");
+      if (model === "B2C") {
+        clear("icp");
+        clear("pilotType", "nao_iniciado");
+        clear("pilotSummary");
+        clear("acv");
+      } else {
+        clear("audience");
+      }
     }
 
-    if (formValues.stage === "Tracao") {
-      clearErrors(["interviewsCount", "hypothesisValidated", "pilotType", "pilotDetails"]);
-      setValue("interviewsCount", "", { shouldDirty: true, shouldValidate: false });
-      setValue("hypothesisValidated", "", { shouldDirty: true, shouldValidate: false });
-      setValue("pilotType", undefined as any, { shouldDirty: true, shouldValidate: false });
-      setValue("pilotDetails", "", { shouldDirty: true, shouldValidate: false });
+    if (stage === "Tracao") {
+      clear("interviewsCount");
+      clear("validatedHypothesis");
+      clear("ideaEvidence");
+      clear("psfEvidence", "entrevistas");
+      clear("pilotType", "nao_iniciado");
+      clear("pilotSummary");
+      if (model === "B2C") clear("icp");
+      else clear("audience");
     }
-
-    // Limpeza reativa por modelo
-    if (formValues.model !== "B2C") {
-      clearErrors("mau");
-      setValue("mau", "", { shouldDirty: true, shouldValidate: false });
-    }
-    if (formValues.model === "B2C") {
-      clearErrors("acv");
-      setValue("acv", "", { shouldDirty: true, shouldValidate: false });
-    }
-
-    // Histórico de captação
-    if (formValues.hasRaised !== "Sim") {
-      clearErrors("raisedAmount");
-      setValue("raisedAmount", "", { shouldDirty: true, shouldValidate: false });
-      setValue("investors", "", { shouldDirty: true, shouldValidate: false });
-    }
-  }, [formValues.stage, formValues.model, formValues.hasRaised, clearErrors, setValue]);
+  }, [formValues?.stage, formValues?.model, setValue]);
 
   const handleNextStep = async () => {
-    const isStepValid = await trigger(currentStepFields[step], { shouldFocus: true })
-    if (isStepValid) {
-      const next = step + 1
-      setStep(next)
-      if (next > highestStep) setHighestStep(next)
-    } else {
-      toast.error("Preencha os campos obrigatórios corretamente.")
-    }
-  }
+    const fields = currentStepFields[step] || [];
+    const ok = await trigger(fields as any);
+    if (!ok) return;
 
-  const prevStep = () => setStep((prev) => prev - 1)
+    const next = Math.min(step + 1, stepTitles.length);
+    setStep(next);
+    setHighestStep((h) => Math.max(h, next));
+  };
 
-  const jumpToStep = async (targetStep: number) => {
-    if (targetStep < step) {
-      setStep(targetStep)
-      return
-    }
+  const prevStep = () => setStep((s) => Math.max(1, s - 1));
 
-    if (targetStep <= highestStep) {
-      const isCurrentStepValid = await trigger(currentStepFields[step], { shouldFocus: true })
-      if (isCurrentStepValid) {
-        setStep(targetStep)
-      } else {
-        toast.error("Corrija os erros antes de avançar.")
-      }
+  const jumpToStep = async (st: number) => {
+    if (st <= highestStep) {
+      setStep(st);
+      return;
     }
-  }
+    // Se tentar pular pra frente, valida steps intermediários
+    let cur = step;
+    while (cur < st) {
+      const fields = currentStepFields[cur] || [];
+      const ok = await trigger(fields as any);
+      if (!ok) return;
+      cur += 1;
+    }
+    setStep(st);
+    setHighestStep((h) => Math.max(h, st));
+  };
+
+  const buildAiPrompt = (data: FormData) => {
+    const capitalUse = Object.entries(data.capitalUse || {})
+      .filter(([, v]) => Boolean(v))
+      .map(([k]) => k)
+      .join(", ");
+
+    return [
+      "Você é um analista de triagem do programa MoVe (Montreal Ventures), focado em startups early-stage.",
+      "Objetivo: gerar um resumo objetivo e sinais de maturidade/fit para decisão de triagem.",
+      "Regras: seja pragmático, aponte gaps, e não invente dados.",
+      "",
+      `Startup: ${data.startupName}`,
+      `Vertical: ${data.vertical}${data.vertical === "Outros" ? ` (${data.verticalOther || ""})` : ""}`,
+      `Modelo: ${data.model} | Estágio: ${data.stage}`,
+      "",
+      "Negócio:",
+      `- Cliente-alvo: ${data.targetCustomer}`,
+      `- Dor/urgência: ${data.painUrgency}`,
+      `- Proposta de valor: ${data.valueProp}`,
+      `- Alternativas: ${data.alternatives}`,
+      "",
+      "Maturidade:",
+      data.stage === "Ideia"
+        ? `- Entrevistas: ${data.interviewsCount}
+- Hipótese validada: ${data.validatedHypothesis}
+- Evidência extra: ${data.ideaEvidence || "n/a"}
+- ${data.model === "B2C" ? `Público: ${data.audience}` : `ICP: ${data.icp}`}`
+        : data.stage === "MVP"
+          ? `- Evidência PSF: ${data.psfEvidence}
+- ${data.model === "B2C" ? `MAU: ${data.mau}
+- Canal inicial: ${data.primaryChannel}` : `ICP: ${data.icp}
+- Piloto: ${data.pilotType}
+- Resumo: ${data.pilotSummary}
+- ACV: ${data.acv}`}`
+          : `- MRR: ${data.mrr}
+- Growth 3m: ${data.growth3m}
+- Churn: ${data.churn || "n/a"}
+- Canal: ${data.primaryChannel}
+- ${data.model === "B2C" ? `MAU: ${data.mau}` : `ICP: ${data.icp}
+- ACV: ${data.acv}`}`,
+      "",
+      "Operação:",
+      `- Dedicação semanal: ${data.weeklyDedication}`,
+      `- Composição do time: ${data.teamComposition}`,
+      `- Gargalo: ${data.executionBottleneck}`,
+      "",
+      "Captação:",
+      `- Runway (meses): ${data.runwayMonths}`,
+      `- Capital solicitado: ${data.capital}`,
+      `- Equity: ${data.equity}%`,
+      `- Uso do capital: ${capitalUse}`,
+      `- Plano (defesa): ${data.capitalPlan}`,
+      "",
+      "Saída (em JSON): {summary, maturity_signals, risks, fit_score_0_100, next_questions[]}",
+    ].join("\n");
+  };
 
   const onSubmitForm = async (data: FormData) => {
     try {
-      const finalData = { ...data }
-      if (finalData.hasRaised !== "Sim") {
-        delete finalData.raisedAmount
-        delete finalData.investors
+      setLoadingStage("ai");
+
+      const apiKey = (import.meta as any).env?.VITE_GEMINI_API_KEY || (process as any).env?.NEXT_PUBLIC_GEMINI_API_KEY;
+      if (!apiKey) {
+        toast.error("Configuração ausente", { description: "Chave da IA não configurada." });
+        setLoadingStage("idle");
+        return;
       }
 
-      setLoadingStage("ai")
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-      let analiseIA = "";
-      let scoreIA: number | null = null;
+      const prompt = buildAiPrompt(data);
+      const result = await model.generateContent(prompt);
+      const text = result?.response?.text?.() || "";
 
-      try {
-        const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-        if (!apiKey) throw new Error("Chave VITE_GEMINI_API_KEY ausente.");
-
-        const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-
-        const prompt = `
-          Você é um avaliador do programa MoVe (Montreal Ventures). Sua função é fazer TRIAGEM operacional e pragmática de inscrições.
-          Você NÃO é um "VC genérico". Você deve avaliar elegibilidade e aderência ao programa, qualidade do sinal (PSF), capacidade de execução e clareza do uso do capital.
-          Seja direto, firme e útil. Sem floreio.
-
-          REGRAS DO PROGRAMA (use como critério):
-          - Early-stage com solução digital/tech e potencial de escala.
-          - Preferência por MVP/validação e sinais de Product-Solution Fit.
-          - Dedicação mínima de 10h/semana.
-
-          DADOS DA STARTUP:
-          - Nome: ${finalData.startupName}
-          - Modelo: ${finalData.model} ${finalData.acv ? `(ACV: ${finalData.acv})` : ''} ${finalData.mau ? `(MAU: ${finalData.mau})` : ''}
-          - Estágio: ${finalData.stage}
-          - Problema/Solução (declaração): "${finalData.challenge}"
-
-          MATURIDADE (CONDICIONAL AO ESTÁGIO):
-          - Entrevistas: ${finalData.interviewsCount || "-"}
-          - Hipótese validada: ${finalData.hypothesisValidated || "-"}
-          - Evidência PSF: ${finalData.psfEvidence || "-"}
-          - Piloto: ${finalData.pilotType || "-"} | ${finalData.pilotDetails || "-"}
-          - MRR: ${finalData.mrr || "-"}
-          - Crescimento 3m (%): ${finalData.growth3m || "-"}
-          - Churn (%): ${finalData.churn || "-"}
-
-          OPERAÇÃO:
-          - Time: ${finalData.teamSize}
-          - Dedicação semanal: ${finalData.dedicationWeekly}
-          - Founder técnico: ${finalData.hasTechFounder}
-          - Founder de negócio (GTM/Vendas): ${finalData.hasBizFounder}
-          - Fundadores: ${finalData.founders.map(f => f.name).join(", ")}
-
-          CAPTAÇÃO:
-          - Runway (meses): ${finalData.runwayMonths}
-          - Valor solicitado: ${finalData.capital} por ${finalData.equity}% de equity
-          - Uso do capital: ${(finalData.capitalUse || []).join(", ") || "-"}
-          - Plano (defesa): "${finalData.capitalPlan || "-"}"
-          - Histórico: ${finalData.hasRaised === 'Sim' ? `Já captou ${finalData.raisedAmount} (Investidores: ${finalData.investors || 'Não informado'})` : 'Bootstrapped / primeira captação'}
-
-          SAÍDA (use MARKDOWN e exatamente estes blocos):
-          1) ELEGIBILIDADE (SIM/NAO + 1 linha)
-          2) PSF / MATURIDADE (o que é evidência vs. narrativa)
-          3) EXECUÇÃO (time, dedicação, gargalos)
-          4) USO DO CAPITAL (se faz sentido para o estágio)
-          5) RED FLAGS (lista objetiva)
-          6) PARECER: GO / MAYBE / NO-GO (1 linha)
-          7) PRÓXIMAS PERGUNTAS (até 6 bullets para entrevista)
-        `;
-
-        const result = await model.generateContent(prompt);
-        analiseIA = result.response.text();
-
-        const scoreMatch = analiseIA.match(/SCORE:\s*(\d+)/i);
-        if (scoreMatch && scoreMatch[1]) {
-          scoreIA = Number(scoreMatch[1]);
-        }
-      } catch (iaError) {
-        analiseIA = "Análise da IA indisponível no momento devido a um erro de comunicação com o servidor.";
-      }
-
-      setLoadingStage("crm")
-
-      try {
-        const fundadoresTexto = finalData.founders
-          .map(f => `${f.name} (${f.email} | ${f.phone} | ${f.linkedin || 'Sem LinkedIn'})`)
-          .join("\n");
-
-        const modeloExpandido = `${finalData.model} ${finalData.model === 'B2B' && finalData.acv ? `- ACV: ${finalData.acv}` : finalData.model === 'B2C' && finalData.mau ? `- MAU: ${finalData.mau}` : ''}`;
-        const capitalExpandido = `${finalData.capital} ${finalData.hasRaised === 'Sim' ? `(Já captou antes: ${finalData.raisedAmount})` : '(Primeira captação)'}`;
-
-        const fieldsPayload: any = {
-          "Startup": finalData.startupName,
-          "Modelo": modeloExpandido,
-          "Estágio": finalData.stage,
-          "Capital": capitalExpandido,
-          "Equity": Number(finalData.equity),
-          "Fundadores": fundadoresTexto,
-          "Desafio": finalData.challenge,
-          "Análise IA": analiseIA
-        };
-
-        if (scoreIA !== null) {
-          fieldsPayload["Score"] = scoreIA;
-        }
-
-        const airtableBody = {
-          records: [
-            {
-              fields: fieldsPayload
-            }
-          ]
-        };
-
-        const airtableUrl = `https://api.airtable.com/v0/${import.meta.env.VITE_AIRTABLE_BASE_ID}/${import.meta.env.VITE_AIRTABLE_TABLE_NAME}`;
-
-        const response = await fetch(airtableUrl, {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${import.meta.env.VITE_AIRTABLE_TOKEN}`,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(airtableBody)
-        });
-
-        if (!response.ok) {
-          throw new Error("Falha ao salvar no Airtable");
-        }
-      } catch (airtableError) {
-        throw airtableError;
-      }
-
-      setLoadingStage("done")
-      await new Promise(resolve => setTimeout(resolve, 800))
+      setLoadingStage("done");
 
       toast.success("Inscrição enviada!", {
         description: "Tudo certo — recebemos sua inscrição e iniciaremos a avaliação.",
         position: "top-center",
-        duration: 4500,
-        style: {
-          width: "min(92vw, 520px)",
-          background: "linear-gradient(180deg, rgba(6,78,59,0.95) 0%, rgba(4,120,87,0.95) 100%)",
-          color: "#ECFDF5",
-          border: "1px solid rgba(52,211,153,0.65)",
-          boxShadow: "0 18px 60px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(52,211,153,0.25)",
-          borderRadius: "18px",
-          padding: "18px 20px",
-          alignItems: "center",
-        },
-        action: {
-          label: "OK",
-          onClick: () => { },
-        },
-        actionButtonStyle: {
-          background: "rgba(16,185,129,0.28)",
-          color: "#ECFDF5",
-          border: "1px solid rgba(52,211,153,0.7)",
-          borderRadius: "12px",
-          padding: "8px 14px",
-          fontWeight: 900,
-          letterSpacing: "0.3px",
-          cursor: "pointer",
-          boxShadow: "inset 0 0 0 1px rgba(16,185,129,0.3)",
-        },
-      })
+        duration: 7000,
+      });
 
-      localStorage.removeItem("@moveTrackDraft")
-      localStorage.removeItem("@moveTrackStep")
-      localStorage.removeItem("@moveTrackHighestStep")
+      localStorage.removeItem(DRAFT_KEY);
 
       reset({
+        startupName: "",
+        vertical: "AI",
+        verticalOther: "",
         founders: [{ name: "", email: "", phone: "", linkedin: "" }],
         model: "B2B",
         stage: "Ideia",
-        startupName: "",
-        challenge: "",
-
+        targetCustomer: "",
+        painUrgency: "",
+        valueProp: "",
+        alternatives: "",
         interviewsCount: "",
-        hypothesisValidated: "",
-        psfEvidence: undefined as any,
-        pilotType: undefined as any,
-        pilotDetails: "",
-
+        validatedHypothesis: "",
+        ideaEvidence: "",
+        icp: "",
+        audience: "",
+        psfEvidence: "entrevistas",
+        pilotType: "nao_iniciado",
+        pilotSummary: "",
         acv: "",
         mau: "",
         mrr: "",
         growth3m: "",
         churn: "",
-
-        teamSize: "1-5",
-        dedicationWeekly: "40+",
-        hasTechFounder: "Sim",
-        hasBizFounder: "Sim",
-
+        primaryChannel: "",
+        weeklyDedication: "10-20",
+        teamComposition: "solo",
+        executionBottleneck: "",
         runwayMonths: "",
-        hasRaised: "Nao",
-        raisedAmount: "",
-        investors: "",
         capital: "",
-        equity: 0,
-        capitalUse: [],
+        equity: "",
+        capitalUse: { ...emptyCapitalUse },
         capitalPlan: "",
-      })
+      });
 
-      setStep(1)
-      setHighestStep(1)
+      setStep(1);
+      setHighestStep(1);
+      setLoadingStage("idle");
+      setIsModalOpen(false);
 
+      // opcional: log da IA no console pra debug
+      if (text) console.log("[MOVE][AI]", text);
     } catch (e) {
       toast.error("Falha no envio", {
         description: "Não foi possível enviar agora. Tente novamente.",
-        action: {
-          label: "Fechar",
-          onClick: () => { },
-        },
-      })
-    } finally {
-      setLoadingStage("idle")
-      setIsModalOpen(false)
+        action: { label: "Fechar", onClick: () => {} },
+      });
+      setLoadingStage("idle");
     }
-  }
+  };
 
   return {
     isModalOpen,
@@ -406,6 +368,7 @@ export function useStepForms() {
     step,
     highestStep,
     loadingStage,
+    stepTitles,
     register,
     handleSubmit,
     onSubmitForm,
@@ -419,5 +382,5 @@ export function useStepForms() {
     handleNextStep,
     prevStep,
     jumpToStep,
-  }
+  };
 }

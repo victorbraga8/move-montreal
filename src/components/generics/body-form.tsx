@@ -73,6 +73,43 @@ export default function BodyForm({
             <FieldError path="startupName" />
           </div>
 
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="relative">
+              <label className={labelBase}>Área / Vertical</label>
+              <select
+                {...register("vertical")}
+                className="w-full bg-[#030712] border border-slate-700 rounded-xl px-4 sm:px-5 py-3 sm:py-3.5 text-white focus:outline-none focus:border-cyan-500 appearance-none"
+              >
+                <option value="AI">AI / GenAI</option>
+                <option value="GovTech">GovTech</option>
+                <option value="FinTech">FinTech</option>
+                <option value="IdTech">IdTech / EdTech</option>
+                <option value="Cybersecurity">Cybersecurity</option>
+                <option value="IoT">IoT / Hardware</option>
+                <option value="HealthTech">HealthTech</option>
+                <option value="Ecommerce">Retail / E-commerce</option>
+                <option value="Logistics">Logistics / Supply Chain</option>
+                <option value="Climate">Climate / Energy</option>
+                <option value="Outros">Outros</option>
+              </select>
+              <ChevronDown className="w-5 h-5 text-slate-500 absolute right-4 top-[2.4rem] pointer-events-none" />
+              <FieldError path="vertical" />
+            </div>
+
+            {formValues?.vertical === "Outros" && (
+              <div>
+                <label className={labelBase}>Qual?</label>
+                <input
+                  type="text"
+                  {...register("verticalOther")}
+                  className={`${inputBase} ${errors?.verticalOther ? "border-red-500" : ""}`}
+                  placeholder="Ex: AgriTech, PropTech..."
+                />
+                <FieldError path="verticalOther" />
+              </div>
+            )}
+          </div>
+
           {founderFields?.map((field: AnyObj, index: number) => (
             <div
               key={field.id}
@@ -264,6 +301,30 @@ export default function BodyForm({
                 <FieldError path="validatedHypothesis" />
               </div>
 
+              {model === "B2C" ? (
+                <div>
+                  <label className={labelBase}>Público / segmento</label>
+                  <input
+                    type="text"
+                    {...register("audience")}
+                    className={`${inputBase} ${errors?.audience ? "border-red-500" : ""}`}
+                    placeholder="Ex: estudantes de 16–22, mães de primeira viagem, devs júnior..."
+                  />
+                  <FieldError path="audience" />
+                </div>
+              ) : (
+                <div>
+                  <label className={labelBase}>ICP (perfil de cliente ideal)</label>
+                  <input
+                    type="text"
+                    {...register("icp")}
+                    className={`${inputBase} ${errors?.icp ? "border-red-500" : ""}`}
+                    placeholder="Ex: clínicas até 10 médicos, e-commerces faturando 200k/mês..."
+                  />
+                  <FieldError path="icp" />
+                </div>
+              )}
+
               <div>
                 <label className={labelBase}>Evidência do avanço (opcional)</label>
                 <textarea
@@ -325,23 +386,48 @@ export default function BodyForm({
               )}
 
               {model === "B2C" && (
-                <div>
-                  <label className={labelBase}>MAU (usuários ativos no mês)</label>
-                  <input
-                    type="text"
-                    {...register("mau")}
-                    onChange={(e) => setValue("mau", maskInteger(e.target.value), { shouldValidate: true })}
-                    className={`${inputBase} ${errors?.mau ? "border-red-500" : ""}`}
-                    placeholder="Ex: 10.000"
-                    inputMode="numeric"
-                  />
-                  <FieldError path="mau" />
+                <div className="space-y-5">
+                  <div>
+                    <label className={labelBase}>MAU (usuários ativos no mês)</label>
+                    <input
+                      type="text"
+                      {...register("mau")}
+                      onChange={(e) => setValue("mau", maskInteger(e.target.value), { shouldValidate: true })}
+                      className={`${inputBase} ${errors?.mau ? "border-red-500" : ""}`}
+                      placeholder="Ex: 10.000"
+                      inputMode="numeric"
+                    />
+                    <FieldError path="mau" />
+                  </div>
+
+                  <div>
+                    <label className={labelBase}>Canal inicial de aquisição</label>
+                    <input
+                      type="text"
+                      {...register("primaryChannel")}
+                      className={`${inputBase} ${errors?.primaryChannel ? "border-red-500" : ""}`}
+                      placeholder="Ex: orgânico, paid, parcerias, comunidade..."
+                    />
+                    <FieldError path="primaryChannel" />
+                  </div>
                 </div>
               )}
 
               {(model === "B2B" || model === "B2B2C") && (
-                <div>
-                  <label className={labelBase}>ACV (ticket anual estimado)</label>
+                <>
+                  <div>
+                    <label className={labelBase}>ICP (perfil de cliente ideal)</label>
+                    <input
+                      type="text"
+                      {...register("icp")}
+                      className={`${inputBase} ${errors?.icp ? "border-red-500" : ""}`}
+                      placeholder="Ex: PMEs com 20–200 funcionários, clínicas, imobiliárias..."
+                    />
+                    <FieldError path="icp" />
+                  </div>
+
+                  <div>
+                    <label className={labelBase}>ACV (ticket anual estimado)</label>
                   <input
                     type="text"
                     {...register("acv")}
@@ -352,6 +438,7 @@ export default function BodyForm({
                   />
                   <FieldError path="acv" />
                 </div>
+                </>
               )}
             </div>
           )}
@@ -429,6 +516,19 @@ export default function BodyForm({
                   </div>
                 )}
               </div>
+
+              {(model === "B2B" || model === "B2B2C") && (
+                <div>
+                  <label className={labelBase}>ICP (perfil de cliente ideal)</label>
+                  <input
+                    type="text"
+                    {...register("icp")}
+                    className={`${inputBase} ${errors?.icp ? "border-red-500" : ""}`}
+                    placeholder="Ex: PMEs com 20–200 funcionários no setor X..."
+                  />
+                  <FieldError path="icp" />
+                </div>
+              )}
 
               <div>
                 <label className={labelBase}>Canal principal de aquisição</label>
