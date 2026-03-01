@@ -26,6 +26,9 @@ export default function FormSteps({
   setIsModalOpen
 }: FormStepsProps & { setIsModalOpen: (val: boolean) => void }) {
 
+  const lastStep = stepTitles.length;
+
+
   return (
     <div className="relative w-full h-full min-h-0 flex flex-col bg-slate-900 border-0 sm:border border-slate-700 sm:rounded-3xl shadow-[0_0_100px_rgba(6,182,212,0.15)] overflow-hidden animate-in slide-in-from-bottom-full sm:slide-in-from-bottom-8">
 
@@ -36,7 +39,7 @@ export default function FormSteps({
       <HeaderForm setIsModalOpen={setIsModalOpen} />
       <TimelineForm stepTitles={stepTitles} highestStep={highestStep} jumpToStep={jumpToStep} step={step} />
       <BodyForm step={step} register={register} errors={errors} founderFields={founderFields} appendFounder={appendFounder} formValues={formValues} setValue={setValue} removeFounder={removeFounder} />
-      <FooterForm step={step} prevStep={prevStep} isSubmitting={isSubmitting} handleNextStep={handleNextStep} handleSubmit={handleSubmit} onSubmitForm={onSubmitForm} />
+      <FooterForm step={step} lastStep={lastStep} prevStep={prevStep} isSubmitting={isSubmitting} handleNextStep={handleNextStep} handleSubmit={handleSubmit} onSubmitForm={onSubmitForm} />
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogDescription, DialogOverlay, DialogTitle } from "@/components/ui/dialog"
 import FormSteps from "../ui/form-steps";
 import type { ModalPropsMain } from "@/types";
-import { VisuallyHidden } from "radix-ui";
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 
 export default function MainDialog({ stepForms }: ModalPropsMain) {
   return (

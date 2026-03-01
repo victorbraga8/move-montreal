@@ -46,3 +46,15 @@ export function centsToCurrency(value: number) {
     currency: "BRL",
   });
 }
+
+export function maskDigitsOnly(value: string, maxLen?: number) {
+  let v = value.replace(/\D/g, "");
+  if (typeof maxLen === "number") v = v.slice(0, maxLen);
+  return v;
+}
+
+export function maskInteger(value: string, maxDigits: number = 9) {
+  const digits = maskDigitsOnly(value, maxDigits);
+  if (!digits) return "";
+  return new Intl.NumberFormat("pt-BR").format(Number(digits));
+}

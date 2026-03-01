@@ -7,7 +7,7 @@ export const faqs = [
   { q: "Como funciona a seleção inteligente?", a: "Nossa IA faz a primeira triagem do seu pitch. Depois, passamos por entrevistas e comitê final de aprovação." }
 ];
 
-export const stepTitles = ["Identificação", "O Negócio", "Operação", "Captação"];
+export const stepTitles = ["Identificação", "O Negócio", "Maturidade (por Estágio)", "Operação", "Captação"];
 
 export const stepFields: Record<number, (keyof FormData)[]> = {
   1: ['startupName', 'founders'],

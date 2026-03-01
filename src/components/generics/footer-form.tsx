@@ -17,7 +17,7 @@ export default function FooterForm({ step, prevStep, isSubmitting, handleNextSte
         <div className="flex-1 sm:flex-none"></div>
       )}
 
-      {step < 4 ? (
+      {step < 5 ? (
         <Button
           type="button"
           onClick={handleNextStep}

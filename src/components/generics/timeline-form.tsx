@@ -8,7 +8,7 @@ export default function TimelineForm({ stepTitles, highestStep, jumpToStep, step
 
         <div
           className="absolute top-0 left-0 h-full bg-cyan-500 transition-all duration-500 ease-out sm:hidden"
-          style={{ width: `${(step / 4) * 100}%` }}
+          style={{ width: `${(step / stepTitles.length) * 100}%` }}
         ></div>
         <div className="hidden sm:flex items-center justify-between relative">
           <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-slate-800 rounded-full z-0"></div>
@@ -46,7 +46,7 @@ export default function TimelineForm({ stepTitles, highestStep, jumpToStep, step
       <div className="hidden sm:block h-1 bg-slate-800 w-full relative shadow-inner overflow-hidden shrink-0">
         <div
           className="absolute top-0 left-0 h-full bg-cyan-500 transition-all duration-500 ease-out shadow-[0_0_10px_rgba(6,182,212,0.8)]"
-          style={{ width: `${(step / 4) * 100}%` }}
+          style={{ width: `${(step / stepTitles.length) * 100}%` }}
         ></div>
       </div>
     </>

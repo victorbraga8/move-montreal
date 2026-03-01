@@ -14,9 +14,10 @@ export function useStepForms() {
 
   const currentStepFields: Record<number, (keyof FormData)[]> = {
     1: ["startupName", "founders"],
-    2: ["model", "stage", "mrr", "challenge", "acv", "mau"],
-    3: ["teamSize", "fullTime"],
-    4: ["hasRaised", "raisedAmount", "investors", "capital", "equity"],
+    2: ["model", "stage", "challenge"],
+    3: ["interviewsCount", "hypothesisValidated", "psfEvidence", "pilotType", "pilotDetails", "acv", "mau", "mrr", "growth3m", "churn"],
+    4: ["teamSize", "dedicationWeekly", "hasTechFounder", "hasBizFounder"],
+    5: ["runwayMonths", "capital", "equity", "capitalUse", "capitalPlan", "hasRaised", "raisedAmount", "investors"],
   };
 
   const {
@@ -37,18 +38,34 @@ export function useStepForms() {
       founders: [{ name: "", email: "", phone: "", linkedin: "" }],
       model: "B2B",
       stage: "Ideia",
-      teamSize: "1-5",
-      fullTime: "Sim",
       startupName: "",
       challenge: "",
-      mrr: "",
+
+      interviewsCount: "",
+      hypothesisValidated: "",
+      psfEvidence: undefined,
+      pilotType: undefined,
+      pilotDetails: "",
+
       acv: "",
       mau: "",
+      mrr: "",
+      growth3m: "",
+      churn: "",
+
+      teamSize: "1-5",
+      dedicationWeekly: "40+",
+      hasTechFounder: "Sim",
+      hasBizFounder: "Sim",
+
+      runwayMonths: "",
       hasRaised: "Nao",
       raisedAmount: "",
       investors: "",
       capital: "",
       equity: 0,
+      capitalUse: [],
+      capitalPlan: "",
     },
   });
 
@@ -88,16 +105,51 @@ export function useStepForms() {
   }, [watch])
 
   useEffect(() => {
-    if (formValues.stage !== "Tracao") {
-      clearErrors("mrr")
-      setValue("mrr", "", { shouldDirty: true, shouldValidate: false })
+    // Limpeza reativa por estágio
+    if (formValues.stage === "Ideia") {
+      clearErrors(["acv", "mau", "mrr", "growth3m", "churn", "psfEvidence", "pilotType", "pilotDetails"]);
+      setValue("acv", "", { shouldDirty: true, shouldValidate: false });
+      setValue("mau", "", { shouldDirty: true, shouldValidate: false });
+      setValue("mrr", "", { shouldDirty: true, shouldValidate: false });
+      setValue("growth3m", "", { shouldDirty: true, shouldValidate: false });
+      setValue("churn", "", { shouldDirty: true, shouldValidate: false });
+      setValue("psfEvidence", undefined as any, { shouldDirty: true, shouldValidate: false });
+      setValue("pilotType", undefined as any, { shouldDirty: true, shouldValidate: false });
+      setValue("pilotDetails", "", { shouldDirty: true, shouldValidate: false });
     }
+
+    if (formValues.stage === "MVP") {
+      clearErrors(["mrr", "growth3m", "churn"]);
+      setValue("mrr", "", { shouldDirty: true, shouldValidate: false });
+      setValue("growth3m", "", { shouldDirty: true, shouldValidate: false });
+      setValue("churn", "", { shouldDirty: true, shouldValidate: false });
+    }
+
+    if (formValues.stage === "Tracao") {
+      clearErrors(["interviewsCount", "hypothesisValidated", "pilotType", "pilotDetails"]);
+      setValue("interviewsCount", "", { shouldDirty: true, shouldValidate: false });
+      setValue("hypothesisValidated", "", { shouldDirty: true, shouldValidate: false });
+      setValue("pilotType", undefined as any, { shouldDirty: true, shouldValidate: false });
+      setValue("pilotDetails", "", { shouldDirty: true, shouldValidate: false });
+    }
+
+    // Limpeza reativa por modelo
+    if (formValues.model !== "B2C") {
+      clearErrors("mau");
+      setValue("mau", "", { shouldDirty: true, shouldValidate: false });
+    }
+    if (formValues.model === "B2C") {
+      clearErrors("acv");
+      setValue("acv", "", { shouldDirty: true, shouldValidate: false });
+    }
+
+    // Histórico de captação
     if (formValues.hasRaised !== "Sim") {
-      clearErrors("raisedAmount")
-      setValue("raisedAmount", "", { shouldDirty: true, shouldValidate: false })
-      setValue("investors", "", { shouldDirty: true, shouldValidate: false })
+      clearErrors("raisedAmount");
+      setValue("raisedAmount", "", { shouldDirty: true, shouldValidate: false });
+      setValue("investors", "", { shouldDirty: true, shouldValidate: false });
     }
-  }, [formValues.stage, formValues.hasRaised, clearErrors, setValue])
+  }, [formValues.stage, formValues.model, formValues.hasRaised, clearErrors, setValue]);
 
   const handleNextStep = async () => {
     const isStepValid = await trigger(currentStepFields[step], { shouldFocus: true })
@@ -131,7 +183,6 @@ export function useStepForms() {
   const onSubmitForm = async (data: FormData) => {
     try {
       const finalData = { ...data }
-      if (finalData.stage !== "Tracao") delete finalData.mrr
       if (finalData.hasRaised !== "Sim") {
         delete finalData.raisedAmount
         delete finalData.investors
@@ -150,32 +201,52 @@ export function useStepForms() {
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
         const prompt = `
-          Você é um analista sênior, implacável e pragmático de Venture Capital avaliando startups para o programa de aceleração MoVe.
-          Sua análise deve ser EXTREMAMENTE FIRME, realista, crítica, direta ao ponto e sem qualquer tipo de floreio ou otimismo infundado. 
-          O seu objetivo principal é triar os candidatos com rigor, apontar falhas lógicas no modelo de negócio, avaliar se a matemática do valuation faz sentido e proteger o capital e o tempo dos investidores.
+          Você é um avaliador do programa MoVe (Montreal Ventures). Sua função é fazer TRIAGEM operacional e pragmática de inscrições.
+          Você NÃO é um "VC genérico". Você deve avaliar elegibilidade e aderência ao programa, qualidade do sinal (PSF), capacidade de execução e clareza do uso do capital.
+          Seja direto, firme e útil. Sem floreio.
+
+          REGRAS DO PROGRAMA (use como critério):
+          - Early-stage com solução digital/tech e potencial de escala.
+          - Preferência por MVP/validação e sinais de Product-Solution Fit.
+          - Dedicação mínima de 10h/semana.
 
           DADOS DA STARTUP:
           - Nome: ${finalData.startupName}
-          - Modelo: ${finalData.model} ${finalData.model === 'B2B' && finalData.acv ? `(ACV: ${finalData.acv})` : ''} ${finalData.model === 'B2C' && finalData.mau ? `(MAU: ${finalData.mau})` : ''}
+          - Modelo: ${finalData.model} ${finalData.acv ? `(ACV: ${finalData.acv})` : ''} ${finalData.mau ? `(MAU: ${finalData.mau})` : ''}
           - Estágio: ${finalData.stage}
-          - Tamanho do Time: ${finalData.teamSize} (Dedicação exclusiva: ${finalData.fullTime})
-          - Captação Desejada: ${finalData.capital} em troca de ${finalData.equity}% de equity
-          - Histórico de Captação: ${finalData.hasRaised === 'Sim' ? `Já captou ${finalData.raisedAmount} (Investidores: ${finalData.investors || 'Não informado'})` : 'Bootstrapped (Nunca captou)'}
-          - MRR atual (Receita): ${finalData.mrr || "Não possui / Pré-receita"}
+          - Problema/Solução (declaração): "${finalData.challenge}"
+
+          MATURIDADE (CONDICIONAL AO ESTÁGIO):
+          - Entrevistas: ${finalData.interviewsCount || "-"}
+          - Hipótese validada: ${finalData.hypothesisValidated || "-"}
+          - Evidência PSF: ${finalData.psfEvidence || "-"}
+          - Piloto: ${finalData.pilotType || "-"} | ${finalData.pilotDetails || "-"}
+          - MRR: ${finalData.mrr || "-"}
+          - Crescimento 3m (%): ${finalData.growth3m || "-"}
+          - Churn (%): ${finalData.churn || "-"}
+
+          OPERAÇÃO:
+          - Time: ${finalData.teamSize}
+          - Dedicação semanal: ${finalData.dedicationWeekly}
+          - Founder técnico: ${finalData.hasTechFounder}
+          - Founder de negócio (GTM/Vendas): ${finalData.hasBizFounder}
           - Fundadores: ${finalData.founders.map(f => f.name).join(", ")}
-          
-          DESAFIO E PROPOSTA DECLARADA PELOS FUNDADORES:
-          "${finalData.challenge}"
-          
-          ESTRUTURE SUA RESPOSTA EXATAMENTE COM OS TÓPICOS ABAIXO USANDO MARKDOWN:
 
-          📊 SCORE: [SUA NOTA AQUI]/10
+          CAPTAÇÃO:
+          - Runway (meses): ${finalData.runwayMonths}
+          - Valor solicitado: ${finalData.capital} por ${finalData.equity}% de equity
+          - Uso do capital: ${(finalData.capitalUse || []).join(", ") || "-"}
+          - Plano (defesa): "${finalData.capitalPlan || "-"}"
+          - Histórico: ${finalData.hasRaised === 'Sim' ? `Já captou ${finalData.raisedAmount} (Investidores: ${finalData.investors || 'Não informado'})` : 'Bootstrapped / primeira captação'}
 
-          📝 1. Resumo Executivo
-          🟢 2. Oportunidades
-          ⚠️ 3. Riscos e Red Flags
-          💰 4. Análise do Deal e Valuation
-          🎯 5. Parecer de Triagem
+          SAÍDA (use MARKDOWN e exatamente estes blocos):
+          1) ELEGIBILIDADE (SIM/NAO + 1 linha)
+          2) PSF / MATURIDADE (o que é evidência vs. narrativa)
+          3) EXECUÇÃO (time, dedicação, gargalos)
+          4) USO DO CAPITAL (se faz sentido para o estágio)
+          5) RED FLAGS (lista objetiva)
+          6) PARECER: GO / MAYBE / NO-GO (1 linha)
+          7) PRÓXIMAS PERGUNTAS (até 6 bullets para entrevista)
         `;
 
         const result = await model.generateContent(prompt);
@@ -282,18 +353,34 @@ export function useStepForms() {
         founders: [{ name: "", email: "", phone: "", linkedin: "" }],
         model: "B2B",
         stage: "Ideia",
-        teamSize: "1-5",
-        fullTime: "Sim",
         startupName: "",
         challenge: "",
-        mrr: "",
+
+        interviewsCount: "",
+        hypothesisValidated: "",
+        psfEvidence: undefined as any,
+        pilotType: undefined as any,
+        pilotDetails: "",
+
         acv: "",
         mau: "",
+        mrr: "",
+        growth3m: "",
+        churn: "",
+
+        teamSize: "1-5",
+        dedicationWeekly: "40+",
+        hasTechFounder: "Sim",
+        hasBizFounder: "Sim",
+
+        runwayMonths: "",
         hasRaised: "Nao",
         raisedAmount: "",
         investors: "",
         capital: "",
         equity: 0,
+        capitalUse: [],
+        capitalPlan: "",
       })
 
       setStep(1)
