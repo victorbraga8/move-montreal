@@ -11,7 +11,7 @@ export default function Transformation() {
           { num: "01", title: "Produto & Tech", desc: "Refinamento de arquitetura, escalabilidade e roadmap tecnológico de classe mundial." },
           { num: "02", title: "Go-to-Market", desc: "Estratégias de lançamento, posicionamento e conquista dos primeiros clientes enterprise." },
           { num: "03", title: "Pitch & FundRaising", desc: "Preparação intensiva para captação, valuation e narrativa de impacto para investidores." },
-          { num: "04", title: "Vendas & Growth", desc: "Estruturação de funis, métricas piratas e táticas validadas de crescimento acelerado." },
+          { num: "04", title: "Vendas & Growth", desc: "Estruturação de funis, métricas e táticas validadas de crescimento acelerado." },
           { num: "05", title: "Máquina de Vendas", desc: "Criação de processos previsíveis, playbooks e estruturação de times comerciais." },
           { num: "06", title: "Tração & Escala", desc: "Preparação da operação para multiplicar receita mantendo a alta qualidade da entrega." }
         ].map((item, i) => (
