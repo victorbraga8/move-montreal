@@ -86,7 +86,7 @@ export const formSchema = z
     model: z.enum(["B2B", "B2C", "B2B2C"]),
     stage: z.enum(["Ideia", "MVP", "Tracao"]),
     targetCustomer: z.string().min(6, "Explique quem é seu cliente-alvo (mín. 6 caracteres)"),
-    painUrgency: z.string().min(20, "Explique a dor e urgência (mín. 20 caracteres)"),
+    painUrgency: z.string().min(20, "Explique urgência atendida (mín. 20 caracteres)"),
     valueProp: z.string().min(20, "Explique sua proposta de valor (mín. 20 caracteres)"),
     // alternatives: z.string().min(15, "Explique as alternativas atuais (mín. 15 caracteres)"),
 
@@ -111,7 +111,7 @@ export const formSchema = z
     // Step 4
     weeklyDedication: z.enum(["<10", "10-20", "20-40", "40+"]),
     teamComposition: z.enum(["solo", "tecnico", "comercial", "complementar"]),
-    executionBottleneck: z.string().min(15, "Explique seu gargalo atual (mín. 15 caracteres)"),
+    executionBottleneck: z.string().min(15, "Explique seu gap atual (mín. 15 caracteres)"),
 
     // Step 5
     runwayMonths: z.string().min(1, "Informe o runway em meses"),
@@ -120,7 +120,7 @@ export const formSchema = z
     capitalUse: capitalUseSchema,
     capitalPlan: z
       .string()
-      .min(120, "Explique como você usaria o capital (mín. 120 caracteres)")
+      .min(120, "Explique como você aplicaria o capital (mín. 120 caracteres)")
       .max(1200, "Máximo de 1200 caracteres"),
   })
   .superRefine((data, ctx) => {
@@ -160,7 +160,7 @@ export const formSchema = z
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["capital"],
-        message: "Informe um valor válido (ex: R$ 200.000,00).",
+        message: "Informe um valor válido ",
       });
     }
 

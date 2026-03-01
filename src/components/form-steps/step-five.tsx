@@ -36,9 +36,9 @@ export default function StepFive({
             placeholder={capitalPlaceholder}
             inputMode="numeric"
           />
-          <p className="text-xs text-slate-400 mt-1">
+          {/* <p className="text-xs text-slate-400 mt-1">
             Valor máximo permitido: {centsToCurrency(CAPITAL_MAX_CENTS)}.
-          </p>
+          </p> */}
           <FieldError path="capital" />
         </div>
 
@@ -58,10 +58,6 @@ export default function StepFive({
             inputMode="decimal"
             autoComplete="off"
           />
-          <p className="text-xs text-slate-400 mt-1">Aceita decimal (1.4) — até 2 casas.</p>
-          <p className="text-xs text-slate-400 mt-1">
-            Pode ser decimal (ex: 1,4).
-          </p>
           <FieldError path="equity" />
         </div>
 
@@ -87,7 +83,7 @@ export default function StepFive({
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 border-t border-slate-800 pt-8">
         <div className="relative">
-          <label className={labelBase}>Uso do capital</label>
+          <label className={labelBase}>Finalidade do capital</label>
           <div className="rounded-xl border border-slate-700 bg-[#030712] p-3 h-40">
             <div className="grid grid-cols-1 gap-2 text-sm text-slate-200">
               {[
@@ -120,11 +116,8 @@ export default function StepFive({
             rows={6}
             className={`${inputBase} resize-none h-40 ${errors?.capitalPlan ? "border-red-500" : ""
               }`}
-            placeholder="Ex: alocar parte do capital para contratar 1 dev sênior e acelerar o roadmap; em paralelo, rodar testes de aquisição em um canal específico para validar CAC/LTV e fechar os 3 primeiros contratos."
+            placeholder="Ex: Alocar parte do capital para contratar desenvolvedor sênior e acelerar o roadmap."
           />
-          <p className="text-xs text-slate-400 mt-1">
-            Explique como esse capital acelera os próximos 90–180 dias.
-          </p>
           <FieldError path="capitalPlan" />
         </div>
       </div>

@@ -38,7 +38,7 @@ export default function StepFour({ labelBase, register, inputBase, errors, Field
       </div>
 
       <div>
-        <label className={labelBase}>Maior gargalo de execução hoje</label>
+        <label className={labelBase}>Gap de execução atual</label>
         <textarea
           {...register("executionBottleneck")}
           rows={4}

@@ -56,7 +56,7 @@ export default function StepTwo({ labelBase, register, inputBase, errors, FieldE
           <FieldError path="valueProp" />
         </div>
         <div>
-          <label className={labelBase}>Dor e urgência</label>
+          <label className={labelBase}>Urgência atendida</label>
           <textarea
             {...register("painUrgency")}
             rows={3}

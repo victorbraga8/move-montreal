@@ -1,4 +1,4 @@
-import { maskCurrency, maskDigitsOnly, maskInteger, maskPercent } from "@/provider/helpers";
+import { maskCurrency, maskCurrencyClamped, maskDigitsOnly, maskInteger, maskPercent, MAX_MRR_CENTS } from "@/provider/helpers";
 import type { AnyObj } from "@/types";
 import { ChevronDown } from "lucide-react";
 
@@ -18,7 +18,7 @@ export default function StepThree({ labelBase, register, inputBase, errors, Fiel
               placeholder="Ex: 12"
               inputMode="numeric"
             />
-            <p className="text-xs text-slate-400 mt-1">Mínimo recomendado: 5 entrevistas.</p>
+            {/* <p className="text-xs text-slate-400 mt-1">Mínimo recomendado: 5 entrevistas.</p> */}
             <FieldError path="interviewsCount" />
           </div>
 
@@ -169,7 +169,13 @@ export default function StepThree({ labelBase, register, inputBase, errors, Fiel
                 <input
                   type="text"
                   {...register("acv")}
-                  onChange={(e) => setValue("acv", maskCurrency(e.target.value), { shouldValidate: true })}
+                  onChange={(e) =>
+                    setValue(
+                      "acv",
+                      maskCurrencyClamped(e.target.value, MAX_MRR_CENTS),
+                      { shouldValidate: true, shouldDirty: true }
+                    )
+                  }
                   className={`${inputBase} ${errors?.acv ? "border-red-500" : ""}`}
                   placeholder="Ex: R$ 50.000,00"
                   inputMode="numeric"
@@ -190,7 +196,13 @@ export default function StepThree({ labelBase, register, inputBase, errors, Fiel
               <input
                 type="text"
                 {...register("mrr")}
-                onChange={(e) => setValue("mrr", maskCurrency(e.target.value), { shouldValidate: true })}
+                onChange={(e) =>
+                  setValue(
+                    "mrr",
+                    maskCurrencyClamped(e.target.value, MAX_MRR_CENTS),
+                    { shouldValidate: true, shouldDirty: true }
+                  )
+                }
                 className={`${inputBase} ${errors?.mrr ? "border-red-500" : ""}`}
                 placeholder="Ex: R$ 15.000,00"
                 inputMode="numeric"
@@ -232,7 +244,13 @@ export default function StepThree({ labelBase, register, inputBase, errors, Fiel
                 <input
                   type="text"
                   {...register("acv")}
-                  onChange={(e) => setValue("acv", maskCurrency(e.target.value), { shouldValidate: true })}
+                  onChange={(e) =>
+                    setValue(
+                      "acv",
+                      maskCurrencyClamped(e.target.value, MAX_MRR_CENTS),
+                      { shouldValidate: true, shouldDirty: true }
+                    )
+                  }
                   className={`${inputBase} ${errors?.acv ? "border-red-500" : ""}`}
                   placeholder="Ex: R$ 50.000,00"
                   inputMode="numeric"

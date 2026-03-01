@@ -84,3 +84,19 @@ export function clampCurrency(value: string, maxCents: number) {
 
 export const CAPITAL_MAX_CENTS = MAX_CAPITAL_CENTS;
 export const capitalPlaceholder = `Ex: até ${centsToCurrency(CAPITAL_MAX_CENTS)}`;
+export const MAX_MRR_CENTS = 100_000_000 * 100; // R$ 100.000.000,00
+export function maskCurrencyClamped(value: string, maxCents: number) {
+  let digits = value.replace(/\D/g, "");
+  if (!digits) return "";
+
+  let cents = Number(digits);
+  if (!Number.isFinite(cents)) return "";
+
+  const clamped = Math.min(cents, maxCents);
+
+  const formatted = (clamped / 100).toFixed(2)
+    .replace(".", ",")
+    .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+
+  return `R$ ${formatted}`;
+}
