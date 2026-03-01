@@ -23,7 +23,7 @@ export default function BodyForm({
     let cur: any = errors;
     for (const p of parts) cur = cur?.[p];
     const msg = cur?.message;
-    return msg ? <p className="text-red-400 text-xs mt-1">{msg}</p> : null;
+    return msg ? <p className="text-red-400 text-sm mt-1">{msg}</p> : null;
   };
 
   const inputBase =

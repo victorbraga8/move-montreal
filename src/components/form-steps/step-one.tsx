@@ -18,7 +18,7 @@ export default function StepOne({ labelBase, register, inputBase, errors, FieldE
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="relative">
-          <label className={labelBase}>Área / Vertical</label>
+          <label className={labelBase}>Área / Atuação</label>
           <select
             {...register("vertical")}
             className="w-full bg-[#030712] border border-slate-700 rounded-xl px-4 sm:px-5 py-3 sm:py-3.5 text-white focus:outline-none focus:border-cyan-500 appearance-none"

@@ -1,4 +1,3 @@
-import type { FormData } from "@/types";
 
 export const faqs = [
   { q: "A quem se destina o MOVE?", a: "Startups em estágio inicial (Early Stage) com foco B2B ou B2B2C, que já possuam MVP validado no mercado." },
@@ -7,9 +6,9 @@ export const faqs = [
   { q: "Como funciona a seleção inteligente?", a: "Nossa IA faz a primeira triagem do seu pitch. Depois, passamos por entrevistas e comitê final de aprovação." }
 ];
 
-export const stepTitles = ["Identificação", "O Negócio", "Maturidade (por Estágio)", "Operação", "Captação"];
+export const stepTitles = ["Identificação", "O Negócio", "Progresso", "Operação", "Captação"];
 
-export const stepFields: Record<number, (keyof FormData)[]> = {
+export const stepFields: Record<number, any[]> = {
   1: ['startupName', 'founders'],
   2: ['model', 'stage', 'mrr', 'challenge'],
   3: ['teamSize', 'fullTime'],
