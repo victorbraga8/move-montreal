@@ -42,36 +42,29 @@ export function useStepForms() {
       vertical: "AI",
       verticalOther: "",
       founders: [{ name: "", email: "", phone: "", linkedin: "" }],
-
       model: "B2B",
       stage: "Ideia",
       targetCustomer: "",
       painUrgency: "",
       valueProp: "",
-      alternatives: "",
-
       interviewsCount: "",
       validatedHypothesis: "",
       ideaEvidence: "",
       icp: "",
       audience: "",
-
       psfEvidence: "entrevistas",
       pilotType: "planejado",
       pilotSummary: "",
-
       acv: "",
       mau: "",
       mrr: "",
       growth3m: "",
       churn: "",
       primaryChannel: "",
-
       weeklyDedication: "10-20",
       teamComposition: "solo",
       teamSize: undefined as any,
       executionBottleneck: "",
-
       runwayMonths: "",
       capital: "",
       equity: "",
@@ -95,7 +88,7 @@ export function useStepForms() {
   const currentStepFields = useMemo((): Record<number, (keyof FormData)[]> => {
     const base: Record<number, (keyof FormData)[]> = {
       1: ["startupName", "vertical", "verticalOther", "founders"],
-      2: ["model", "stage", "targetCustomer", "painUrgency", "valueProp", "alternatives"],
+      2: ["model", "stage", "targetCustomer", "painUrgency", "valueProp"],
       4: ["weeklyDedication", "teamComposition", "executionBottleneck"],
       5: ["runwayMonths", "capital", "equity", "capitalUse", "capitalPlan"],
     };
@@ -277,7 +270,6 @@ export function useStepForms() {
       `- Cliente-alvo: ${data.targetCustomer}`,
       `- Dor/urgência: ${data.painUrgency}`,
       `- Proposta de valor: ${data.valueProp}`,
-      `- Alternativas: ${data.alternatives}`,
       "",
       "Maturidade:",
       data.stage === "Ideia"
@@ -353,7 +345,6 @@ export function useStepForms() {
         targetCustomer: "",
         painUrgency: "",
         valueProp: "",
-        alternatives: "",
         interviewsCount: "",
         validatedHypothesis: "",
         ideaEvidence: "",
@@ -388,7 +379,7 @@ export function useStepForms() {
     } catch (e) {
       toast.error("Falha no envio", {
         description: "Não foi possível enviar agora. Tente novamente.",
-        action: { label: "Fechar", onClick: () => {} },
+        action: { label: "Fechar", onClick: () => { } },
       });
       setLoadingStage("idle");
     }
