@@ -23,7 +23,7 @@ export const formatAiEvaluation = (
     decision === "Approve" ? "APPROVE" : decision === "Reject" ? "REJECT" : decision === "Uncategorized" ? "UNCATEGORIZED" : "REVIEW";
 
   const lines: string[] = [];
-  lines.push("MOVE | VC Memo");
+  // lines.push("MOVE | VC Memo");
   lines.push(`Decisão: ${decisionLabel}`);
   lines.push(
     `AI Total Score: ${totalScore !== null ? `${round1(totalScore)}/100` : "N/A"} | AI Final Score: ${finalScore !== null ? `${round1(finalScore)}/100` : "N/A"}`
