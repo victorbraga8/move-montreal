@@ -45,7 +45,9 @@ const psfEvidenceEnum = z.enum([
 
 const pilotTypeEnum = z.enum(["planejado", "em_andamento", "concluido"]);
 
-const teamSizeEnum = z.enum(["2-3", "4-6", "7-10", "11+"]);
+const teamSizeEnum = z.enum(["1", "1-2", "2-3", "4-6", "7-10", "11+"]);
+
+
 
 const parseMoney = (v: string) => {
   const digits = String(v || "").replace(/\D/g, "");
@@ -64,7 +66,8 @@ const parsePercent = (v: string) => {
 };
 
 const digitsOnly = (v: string) => String(v || "").replace(/\D/g, "");
-
+const fullTimeEnum = z.enum(["Sim", "Nao"]);
+const hasRaisedEnum = z.enum(["Sim", "Nao"]);
 export const formSchema = z
   .object({
     startupName: z.string().min(2, "Informe o nome da startup"),
@@ -93,6 +96,13 @@ export const formSchema = z
     weeklyDedication: z.enum(["<10", "10-20", "20-40", "40+"]),
     teamComposition: z.enum(["solo", "tecnico", "comercial", "complementar"]),
     teamSize: teamSizeEnum.optional(),
+    fullTime: fullTimeEnum.default("Sim"),
+    hasRaised: hasRaisedEnum.default("Nao"),
+    raisedAmount: z.string().optional().default(""),
+    investors: z.string().optional().default(""),
+    // "challenge" is referenced in the AI prompt/export, but the current UI
+    // doesn't collect it. Keep it optional to avoid blocking navigation/submit.
+    challenge: z.string().trim().max(2000, "Máximo de 2000 caracteres.").optional().default(""),
     executionBottleneck: z.string().min(15, "Explique seu gap atual (mín. 15 caracteres)"),
     runwayMonths: z.string().min(1, "Informe o runway em meses"),
     capital: z.string().min(1, "Informe o capital solicitado"),
@@ -133,6 +143,25 @@ export const formSchema = z
           code: z.ZodIssueCode.custom,
           path: ["teamSize"],
           message: "Informe o tamanho estimado do time.",
+        });
+      }
+    }
+
+    if (data.hasRaised === "Sim") {
+      const raised = parseMoney(data.raisedAmount || "");
+      if (!Number.isFinite(raised) || raised <= 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["raisedAmount"],
+          message: "Informe o valor já captado (ex: R$ 300.000,00).",
+        });
+      }
+
+      if (!data.investors || data.investors.trim().length < 3) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["investors"],
+          message: "Informe os investidores (mín. 3 caracteres) ou 'Não informado'.",
         });
       }
     }
