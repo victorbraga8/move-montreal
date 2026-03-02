@@ -9,28 +9,28 @@ through AI scoring and Airtable integration.
 ## 🧠 Overview
 
 Move Track transforms traditional startup application forms into an
-intelligent evaluation engine.\
+intelligent evaluation engine.
 It collects structured data, validates inputs, applies AI-driven scoring
 logic, and stores normalized results in Airtable.
 
 Designed for:
 
--   Accelerators\
--   Early-stage funds\
--   Venture builders\
--   Innovation programs\
+-   Accelerators
+-   Early-stage funds
+-   Venture builders
+-   Innovation programs
 -   Structured selection processes
 
 ------------------------------------------------------------------------
 
 ## ⚙️ Tech Stack
 
--   React\
--   TypeScript\
--   Vite\
--   Zod (schema validation)\
--   AI integration (LLM scoring engine)\
--   Airtable API\
+-   React
+-   TypeScript
+-   Vite
+-   Zod (schema validation)
+-   AI integration (LLM scoring engine)
+-   Airtable API
 -   Modular domain-driven architecture
 
 ------------------------------------------------------------------------
@@ -107,18 +107,18 @@ enforcement - Friendly validation messages
 
 Evaluation considers:
 
--   Business model\
--   Stage\
--   Product-Solution Fit\
--   Team structure\
--   Market opportunity\
--   Execution gap\
+-   Business model
+-   Stage
+-   Product-Solution Fit
+-   Team structure
+-   Market opportunity
+-   Execution gap
 -   Capital request
 
 Decision ranges:
 
--   0--50 → Rejected\
--   51--75 → Review\
+-   0--50 → Rejected
+-   51--75 → Review
 -   76--100 → Approved
 
 ------------------------------------------------------------------------
@@ -153,21 +153,21 @@ Build production:
 
 ## 🎯 Design Principles
 
--   Strong domain isolation\
--   No circular dependencies\
--   AI parsing safety\
--   Payload integrity\
--   Type-safe end-to-end flow\
+-   Strong domain isolation
+-   No circular dependencies
+-   AI parsing safety
+-   Payload integrity
+-   Type-safe end-to-end flow
 -   Scalable structure
 
 ------------------------------------------------------------------------
 
 ## 🚀 Roadmap
 
--   Auto draft persistence\
--   Internal analytics dashboard\
--   Manual decision override system\
--   Multi-program configuration\
+-   Auto draft persistence
+-   Internal analytics dashboard
+-   Manual decision override system
+-   Multi-program configuration
 -   Export & reporting module
 
 ------------------------------------------------------------------------
@@ -184,10 +184,10 @@ systems powered by AI.
 
 Built with emphasis on:
 
--   Clean architecture\
--   Maintainability\
--   Scalability\
--   Robust data handling\
+-   Clean architecture
+-   Maintainability
+-   Scalability
+-   Robust data handling
 -   Production-ready structure
 
 ------------------------------------------------------------------------
