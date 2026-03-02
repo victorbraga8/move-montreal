@@ -1,73 +1,193 @@
-# React + TypeScript + Vite
+# 🚀 Move Track --- Intelligent Startup Evaluation Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Move Track is a multi-step startup evaluation platform built with React
+and TypeScript, designed to automate structured startup assessment
+through AI scoring and Airtable integration.
 
-Currently, two official plugins are available:
+------------------------------------------------------------------------
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🧠 Overview
 
-## React Compiler
+Move Track transforms traditional startup application forms into an
+intelligent evaluation engine.\
+It collects structured data, validates inputs, applies AI-driven scoring
+logic, and stores normalized results in Airtable.
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+Designed for:
 
-## Expanding the ESLint configuration
+-   Accelerators\
+-   Early-stage funds\
+-   Venture builders\
+-   Innovation programs\
+-   Structured selection processes
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+------------------------------------------------------------------------
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## ⚙️ Tech Stack
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+-   React\
+-   TypeScript\
+-   Vite\
+-   Zod (schema validation)\
+-   AI integration (LLM scoring engine)\
+-   Airtable API\
+-   Modular domain-driven architecture
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+------------------------------------------------------------------------
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🏗 Project Architecture
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+    src/
+     ├── components/
+     │    ├── ui/
+     │    ├── generics/
+     │    └── form-steps/
+     ├── hooks/
+     ├── lib/
+     │    ├── move/
+     │    │    ├── form/
+     │    │    ├── ai/
+     │    │    ├── airtable/
+     │    │    └── utils/
+     ├── provider/
+     │    ├── validation/
+     │    └── data/
+     ├── types/
+     └── main.tsx
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### Domain Separation
+
+**move/form** - Step configuration - Defaults - Cleaners - Draft
+control - Constants
+
+**move/ai** - Prompt builder - JSON normalization - Scoring engine -
+Evaluation memo formatter - AI service layer
+
+**move/airtable** - Payload mapping - Field normalization - Team-size
+mapping - Airtable client
+
+**validation/schema** - Centralized Zod schema - Type safety
+enforcement - Friendly validation messages
+
+------------------------------------------------------------------------
+
+## 🧩 Core Features
+
+### Multi-Step Intelligent Form
+
+-   Controlled navigation
+-   Centralized state via custom hook
+-   Timeline UI
+-   Modular step components
+
+### Robust Validation
+
+-   Strict typing
+-   Safe number parsing
+-   Null-safe normalization
+-   Structured cleaners
+
+### AI Scoring Engine
+
+-   Structured evaluation prompt
+-   JSON-safe response parsing
+-   Score normalization
+-   Decision logic (Rejected / Review / Approved)
+
+### Airtable Integration
+
+-   Clean field mapping
+-   Payload normalization
+-   Structured submission
+-   Fail-safe handling
+
+------------------------------------------------------------------------
+
+## 📊 Scoring Logic
+
+Evaluation considers:
+
+-   Business model\
+-   Stage\
+-   Product-Solution Fit\
+-   Team structure\
+-   Market opportunity\
+-   Execution gap\
+-   Capital request
+
+Decision ranges:
+
+-   0--50 → Rejected\
+-   51--75 → Review\
+-   76--100 → Approved
+
+------------------------------------------------------------------------
+
+## 🔐 Environment Variables
+
+Create a `.env` file:
+
+    VITE_GEMINI_API_KEY=your_key_here
+    VITE_AIRTABLE_API_KEY=your_key_here
+    VITE_AIRTABLE_BASE_ID=appXXXXXXXXXXXX
+    VITE_AIRTABLE_TABLE_NAME=TableName
+
+------------------------------------------------------------------------
+
+## ▶️ Running the Project
+
+Install dependencies:
+
+    npm install
+
+Run development server:
+
+    npm run dev
+
+Build production:
+
+    npm run build
+    npm run preview
+
+------------------------------------------------------------------------
+
+## 🎯 Design Principles
+
+-   Strong domain isolation\
+-   No circular dependencies\
+-   AI parsing safety\
+-   Payload integrity\
+-   Type-safe end-to-end flow\
+-   Scalable structure
+
+------------------------------------------------------------------------
+
+## 🚀 Roadmap
+
+-   Auto draft persistence\
+-   Internal analytics dashboard\
+-   Manual decision override system\
+-   Multi-program configuration\
+-   Export & reporting module
+
+------------------------------------------------------------------------
+
+## 🏆 Mission
+
+Move Track aims to elevate startup evaluation from subjective and manual
+processes into structured, comparable, auditable, and scalable decision
+systems powered by AI.
+
+------------------------------------------------------------------------
+
+## 👨‍💻 Engineering Focus
+
+Built with emphasis on:
+
+-   Clean architecture\
+-   Maintainability\
+-   Scalability\
+-   Robust data handling\
+-   Production-ready structure
+
+------------------------------------------------------------------------

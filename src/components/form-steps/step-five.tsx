@@ -17,7 +17,7 @@ export default function StepFive({
 }: AnyObj) {
   return (
     <div className="space-y-5 sm:space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-      <div className="flex flex-row gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
         <div className="w-full">
           <label className={labelBase}>Capital solicitado</label>
           <input
