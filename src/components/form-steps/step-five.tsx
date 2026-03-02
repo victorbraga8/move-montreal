@@ -2,8 +2,6 @@ import {
   maskPercent,
   maskDigitsOnly,
   clampCurrency,
-  MAX_CAPITAL_CENTS,
-  centsToCurrency,
   CAPITAL_MAX_CENTS,
   capitalPlaceholder,
 } from "@/provider/helpers";
