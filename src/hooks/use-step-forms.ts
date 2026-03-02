@@ -95,17 +95,30 @@ export function useStepForms() {
   };
 
   const onSubmitForm = async (data: FormData) => {
+    // console.log("🟢 [MOVE][FORM] Payload recebido:", data);
     try {
       setLoadingStage("ai");
+      // console.log("🧠 [MOVE][AI] Iniciando avaliação...");
       const ai = await runAiEvaluation(data);
 
+      // console.log("🤖 [MOVE][AI] Resultado calculado:", {
+      //   decision: ai.decision,
+      //   totalScore: ai.totalScore,
+      //   finalScore: ai.finalScore,
+      //   confidencePct: ai.confidencePct,
+      // });
+      // console.log("🤖 [MOVE][AI] Memo formatado (preview):", ai.evaluation?.slice?.(0, 1200) || ai.evaluation);
+
       setLoadingStage("crm");
+      // console.log("📤 [MOVE][AIRTABLE] Montando payload...");
       const fieldsPayload = buildAirtableFieldsPayload(data, {
         decision: ai.decision,
         totalScore: ai.totalScore,
         finalScore: ai.finalScore,
         evaluation: ai.evaluation,
       });
+
+      // console.log("📤 [MOVE][AIRTABLE] Fields payload:", fieldsPayload);
 
       await postToAirtable(fieldsPayload);
 
@@ -125,7 +138,7 @@ export function useStepForms() {
           padding: "18px 20px",
           alignItems: "center",
         },
-        action: { label: "OK", onClick: () => {} },
+        action: { label: "OK", onClick: () => { } },
         actionButtonStyle: {
           background: "rgba(16,185,129,0.28)",
           color: "#ECFDF5",
@@ -145,7 +158,7 @@ export function useStepForms() {
       setHighestStep(1);
       setIsModalOpen(false);
 
-      if (ai.aiRawText) console.log("[MOVE][AI]", ai.aiRawText);
+      // if (ai.aiRawText) console.log("🤖 [MOVE][AI] Resposta bruta:", ai.aiRawText);
     } catch (e: any) {
       toast.error("Falha no envio", {
         description: (typeof e?.message === "string" && e.message) || "Não foi possível enviar agora. Tente novamente.",
@@ -161,7 +174,7 @@ export function useStepForms() {
           padding: "18px 20px",
           alignItems: "center",
         },
-        action: { label: "Fechar", onClick: () => {} },
+        action: { label: "Fechar", onClick: () => { } },
         actionButtonStyle: {
           background: "rgba(239,68,68,0.28)",
           color: "#FEF2F2",
@@ -202,6 +215,7 @@ export function useStepForms() {
     founderFields,
     appendFounder,
     removeFounder,
+    formValues,
     handleNextStep,
     prevStep,
     jumpToStep,

@@ -26,10 +26,10 @@ export const getCurrentStepFields = (formValues: Partial<FormData>) => {
   }
 
   if (stage === "MVP") {
-    s3.push("psfEvidence");
+    s3.push("psfEvidence", "primaryChannel");
     const psf = formValues?.psfEvidence;
     if (model === "B2C") {
-      s3.push("mau", "primaryChannel");
+      s3.push("mau");
     } else {
       s3.push("icp", "acv");
       if (psf === "piloto_nao_pago" || psf === "piloto_pago") {

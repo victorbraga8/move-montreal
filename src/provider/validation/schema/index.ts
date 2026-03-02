@@ -93,7 +93,7 @@ export const formSchema = z
     growth3m: z.string().optional(),
     churn: z.string().optional(),
     primaryChannel: z.string().optional(),
-    weeklyDedication: z.enum(["<10", "10-20", "20-40", "40+"]),
+    weeklyDedication: z.enum(["<10", "10-20", "20-40", "40+", "Full time"]),
     teamComposition: z.enum(["solo", "tecnico", "comercial", "complementar"]),
     teamSize: teamSizeEnum.optional(),
     fullTime: fullTimeEnum.default("Sim"),

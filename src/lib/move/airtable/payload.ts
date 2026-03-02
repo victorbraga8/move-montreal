@@ -3,6 +3,7 @@ import { cleanStr, strOrEmpty, strOrNA } from "../utils/strings";
 import { moneyOrNull, numOrNull, round1 } from "../utils/numbers";
 import type { AiDecision } from "../ai/scoring";
 import { normalizeTeamSize } from "./team-size";
+import { mapCapitalUseToAirtable, mapStageToAirtable, mapTeamCompositionToAirtable, mapWeeklyDedicationToAirtable } from "./mappers";
 
 export const buildAirtableFieldsPayload = (data: FormData, ai: { decision: AiDecision; totalScore: number | null; finalScore: number | null; evaluation: string }) => {
   const modeloSelect = cleanStr((data as any).model);
@@ -10,11 +11,11 @@ export const buildAirtableFieldsPayload = (data: FormData, ai: { decision: AiDec
   const modeloFinal = allowedModelos.has(modeloSelect) ? modeloSelect : modeloSelect ? "Other" : undefined;
 
   const verticalSelect = cleanStr((data as any).vertical) || undefined;
-  const stageSelect = cleanStr((data as any).stage) || undefined;
+  const stageSelect = mapStageToAirtable((data as any).stage);
   const psfEvidenceSelect = cleanStr((data as any).psfEvidence) || undefined;
   const pilotTypeSelect = cleanStr((data as any).pilotType) || undefined;
-  const teamCompositionSelect = cleanStr((data as any).teamComposition) || undefined;
-  const weeklyDedicationSelect = cleanStr((data as any).weeklyDedication) || undefined;
+  const teamCompositionSelect = mapTeamCompositionToAirtable((data as any).teamComposition);
+  const weeklyDedicationSelect = mapWeeklyDedicationToAirtable((data as any).weeklyDedication);
 
   const foundersArr = ((data as any).founders || []) as any[];
   const fundadoresTexto = foundersArr.length
@@ -29,14 +30,7 @@ export const buildAirtableFieldsPayload = (data: FormData, ai: { decision: AiDec
         .join("\n")
     : "Não informado";
 
-  const cu = (((data as any).capitalUse || {}) as Record<string, any>) || {};
-  const capitalUseArray: string[] = [];
-  if (cu?.contratacao) capitalUseArray.push("Hiring");
-  if (cu?.gtm) capitalUseArray.push("Growth");
-  if (cu?.produto) capitalUseArray.push("Product");
-  if (cu?.infra) capitalUseArray.push("Other");
-  if (cu?.compliance) capitalUseArray.push("Other");
-  const capitalUseDeduped = Array.from(new Set(capitalUseArray));
+  const capitalUseDeduped = mapCapitalUseToAirtable(((data as any).capitalUse || {}) as Record<string, any>);
 
   const capitalRequested =
     moneyOrNull((data as any).capitalRequested) ?? moneyOrNull((data as any).capital_solicitado) ?? moneyOrNull((data as any).capital);
@@ -70,7 +64,10 @@ export const buildAirtableFieldsPayload = (data: FormData, ai: { decision: AiDec
     "Primary Channel": strOrEmpty((data as any).primaryChannel),
     "Weekly Dedication": weeklyDedicationSelect,
     "Team Composition": teamCompositionSelect,
-    "Team Size": normalizeTeamSize((data as any).teamSize),
+    "Team Size": (() => {
+      if (teamCompositionSelect === "solo") return "1";
+      return normalizeTeamSize((data as any).teamSize);
+    })(),
     "Execution Bottleneck": strOrNA((data as any).executionBottleneck),
     "Runway (months)": numOrNull((data as any).runwayMonths),
     "Capital Requested": capitalRequested,

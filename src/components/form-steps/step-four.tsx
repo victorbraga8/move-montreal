@@ -22,6 +22,7 @@ export default function StepFour({
             <option value="10-20">10–20h</option>
             <option value="20-40">20–40h</option>
             <option value="40+">40h+</option>
+            <option value="Full time">Full time</option>
           </select>
           <ChevronDown className="w-5 h-5 text-slate-500 absolute right-4 top-[2.4rem] pointer-events-none" />
           <p className="text-xs text-slate-400 mt-1">O programa exige dedicação mínima de 10h/semana.</p>
@@ -51,6 +52,9 @@ export default function StepFour({
             {...register("teamSize")}
             className="w-full bg-[#030712] border border-slate-700 rounded-xl px-4 sm:px-5 py-3 sm:py-3.5 text-white focus:outline-none focus:border-cyan-500 appearance-none"
           >
+            <option value="1-2">1–2 pessoas</option>
+            <option value="1">1 pessoa</option>
+            <option value="1-2">1–2 pessoas</option>
             <option value="2-3">2–3 pessoas</option>
             <option value="4-6">4–6 pessoas</option>
             <option value="7-10">7–10 pessoas</option>

@@ -1,4 +1,4 @@
-import { maskCurrency, maskCurrencyClamped, maskDigitsOnly, maskInteger, maskPercent, MAX_MRR_CENTS } from "@/provider/helpers";
+import { maskCurrencyClamped, maskDigitsOnly, maskInteger, maskPercent, MAX_MRR_CENTS } from "@/provider/helpers";
 import type { AnyObj } from "@/types";
 import { ChevronDown } from "lucide-react";
 
@@ -82,7 +82,7 @@ export default function StepThree({ labelBase, register, inputBase, errors, Fiel
               <option value="entrevistas">Entrevistas validadas</option>
               <option value="piloto_nao_pago">Piloto não pago</option>
               <option value="piloto_pago">Piloto pago</option>
-              <option value="usuarios_ativos">Usuários ativos</option>
+              {model === "B2C" && <option value="usuarios_ativos">Usuários ativos</option>}
             </select>
             <ChevronDown className="w-5 h-5 text-slate-500 absolute right-4 top-[2.4rem] pointer-events-none" />
             <FieldError path="psfEvidence" />

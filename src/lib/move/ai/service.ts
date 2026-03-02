@@ -14,8 +14,10 @@ export const runAiEvaluation = async (data: FormData) => {
   const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
   const prompt = buildAiPrompt(data);
+  console.log("🧠 [MOVE][AI] Prompt enviado:", { chars: prompt.length, preview: prompt.slice(0, 1200) });
   const result = await model.generateContent(prompt);
   const aiRawText = result?.response?.text?.() || "";
+  console.log("🤖 [MOVE][AI] Resposta bruta:", { chars: aiRawText.length, preview: aiRawText.slice(0, 1200) });
 
   const { decision: decision0, score: totalScore, isExplicit } = pickAiDecision(aiRawText);
   const confidencePct = calcConfidence(decision0, totalScore);
@@ -32,6 +34,8 @@ export const runAiEvaluation = async (data: FormData) => {
       : decision0;
 
   const evaluation = formatAiEvaluation(aiRawText, decision, totalScore, finalScore);
+
+  console.log("📌 [MOVE][AI] Scores:", { totalScore, confidencePct, finalScore, decision });
 
   return { aiRawText, decision, totalScore, finalScore, confidencePct, evaluation };
 };
