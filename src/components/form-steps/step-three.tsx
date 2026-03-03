@@ -235,6 +235,9 @@ export default function StepThree({ labelBase, register, inputBase, errors, Fiel
                 placeholder="Ex: 2,3"
                 inputMode="decimal"
               />
+              <p className="text-xs text-slate-400 mt-1">
+                Taxa de cancelamento de clientes.
+              </p>
               <FieldError path="churn" />
             </div>
 
