@@ -34,9 +34,7 @@ export default function StepFive({
             placeholder={capitalPlaceholder}
             inputMode="numeric"
           />
-          {/* <p className="text-xs text-slate-400 mt-1">
-            Valor máximo permitido: {centsToCurrency(CAPITAL_MAX_CENTS)}.
-          </p> */}
+
           <FieldError path="capital" />
         </div>
 
@@ -56,6 +54,9 @@ export default function StepFive({
             inputMode="decimal"
             autoComplete="off"
           />
+          <p className="text-xs text-slate-400 mt-1">
+            Participação societária na empresa.
+          </p>
           <FieldError path="equity" />
         </div>
 
@@ -75,6 +76,9 @@ export default function StepFive({
             placeholder="Ex: 6"
             inputMode="numeric"
           />
+          <p className="text-xs text-slate-400 mt-1">
+            Tempo operação garantidos com o caixa atual.
+          </p>
           <FieldError path="runwayMonths" />
         </div>
       </div>

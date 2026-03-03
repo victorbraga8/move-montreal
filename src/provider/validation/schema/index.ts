@@ -217,11 +217,11 @@ export const formSchema = z
           path: ["interviewsCount"],
           message: "Informe o número de entrevistas (ex: 12).",
         });
-      } else if (interviews < 5) {
+      } else if (interviews < 0) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["interviewsCount"],
-          message: "Mínimo recomendado: 5 entrevistas.",
+          message: "Mínimo recomendado: 1 entrevista.",
         });
       }
 

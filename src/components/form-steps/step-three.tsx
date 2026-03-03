@@ -88,7 +88,7 @@ export default function StepThree({ labelBase, register, inputBase, errors, Fiel
             <FieldError path="psfEvidence" />
           </div>
 
-          {(model === "B2B" || model === "B2B2C") && (psfEvidence === "piloto_nao_pago" || psfEvidence === "piloto_pago") && (
+          {(model === "B2B" || model === "B2B2C" || model === "B2C") && (psfEvidence === "piloto_nao_pago" || psfEvidence === "piloto_pago") && (
             <>
               <div className="relative">
                 <label className={labelBase}>Status do piloto</label>

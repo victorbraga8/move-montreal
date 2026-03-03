@@ -14,7 +14,7 @@ export default function HeaderControl({ step }: { step: number }) {
       )}
       {step === 3 && (
         <h3 className="text-lg sm:text-xl font-bold text-white border-b-2 border-cyan-500/50 pb-2 sm:pb-3 flex items-center gap-2">
-          <Briefcase className="w-5 h-5 text-cyan-400" /> Tração e Validação
+          <Briefcase className="w-5 h-5 text-cyan-400" /> Validação
         </h3>
       )}
       {step === 4 && (
