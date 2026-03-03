@@ -126,6 +126,16 @@ export default function StepThree({ labelBase, register, inputBase, errors, Fiel
           {model === "B2C" && (
             <div className="space-y-5">
               <div>
+                <label className={labelBase}>Público / segmento</label>
+                <input
+                  type="text"
+                  {...register("audience")}
+                  className={`${inputBase} ${errors?.audience ? "border-red-500" : ""}`}
+                  placeholder="Ex: estudantes de 16–22, mães de primeira viagem, devs júnior..."
+                />
+                <FieldError path="audience" />
+              </div>
+              <div>
                 <label className={labelBase}>MAU (usuários ativos no mês)</label>
                 <input
                   type="text"
