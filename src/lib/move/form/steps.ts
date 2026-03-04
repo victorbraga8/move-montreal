@@ -26,15 +26,17 @@ export const getCurrentStepFields = (formValues: Partial<FormData>) => {
   }
 
   if (stage === "MVP") {
-    s3.push("psfEvidence", "primaryChannel");
+    s3.push("psfEvidence");
     const psf = formValues?.psfEvidence;
     if (model === "B2C") {
-      s3.push("mau");
+      s3.push("audience");
+      if (psf === "usuarios_ativos") s3.push("mau");
     } else {
       s3.push("icp", "acv");
-      if (psf === "piloto_nao_pago" || psf === "piloto_pago") {
-        s3.push("pilotType", "pilotSummary");
-      }
+    }
+
+    if (psf === "piloto_nao_pago" || psf === "piloto_pago") {
+      s3.push("pilotType", "pilotSummary");
     }
   }
 
@@ -47,4 +49,17 @@ export const getCurrentStepFields = (formValues: Partial<FormData>) => {
 
   base[3] = s3;
   return base;
+};
+
+export const isFieldRequired = (
+  step: number,
+  field: keyof FormData,
+  formValues: Partial<FormData>
+) => {
+  const required = getCurrentStepFields(formValues)?.[step] ?? [];
+  return required.includes(field);
+};
+
+export const getRequiredFieldsForStep = (step: number, formValues: Partial<FormData>) => {
+  return getCurrentStepFields(formValues)?.[step] ?? [];
 };

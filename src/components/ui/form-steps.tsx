@@ -10,6 +10,7 @@ export default function FormSteps({
   step,
   highestStep,
   loadingStage,
+  canProceed,
   register,
   handleSubmit,
   onSubmitForm,
@@ -39,7 +40,7 @@ export default function FormSteps({
       <HeaderForm setIsModalOpen={setIsModalOpen} />
       <TimelineForm stepTitles={stepTitles} highestStep={highestStep} jumpToStep={jumpToStep} step={step} />
       <BodyForm step={step} register={register} errors={errors} founderFields={founderFields} appendFounder={appendFounder} formValues={formValues} setValue={setValue} removeFounder={removeFounder} />
-      <FooterForm step={step} lastStep={lastStep} prevStep={prevStep} isSubmitting={isSubmitting} handleNextStep={handleNextStep} handleSubmit={handleSubmit} onSubmitForm={onSubmitForm} />
+      <FooterForm step={step} lastStep={lastStep} prevStep={prevStep} isSubmitting={isSubmitting} canProceed={canProceed} handleNextStep={handleNextStep} handleSubmit={handleSubmit} onSubmitForm={onSubmitForm} />
     </div>
   )
 }

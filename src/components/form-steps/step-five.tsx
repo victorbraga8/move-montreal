@@ -9,17 +9,22 @@ import type { AnyObj } from "@/types";
 
 export default function StepFive({
   labelBase,
+  requiredFields,
   register,
   inputBase,
   errors,
   FieldError,
   setValue,
 }: AnyObj) {
+  const isReq = (name: string) => Array.isArray(requiredFields) && requiredFields.includes(name);
+  const Star = ({ show }: { show: boolean }) => (show ? <span className="ml-1 text-amber-300">*</span> : null);
   return (
     <div className="space-y-5 sm:space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
         <div className="w-full">
-          <label className={labelBase}>Capital solicitado</label>
+          <label className={labelBase}>
+            Capital solicitado <Star show={isReq("capital")} />
+          </label>
           <input
             type="text"
             {...register("capital")}
@@ -39,7 +44,9 @@ export default function StepFive({
         </div>
 
         <div className="w-full">
-          <label className={labelBase}>Equity (%)</label>
+          <label className={labelBase}>
+            Equity (%) <Star show={isReq("equity")} />
+          </label>
           <input
             type="text"
             {...register("equity")}
@@ -61,7 +68,9 @@ export default function StepFive({
         </div>
 
         <div className="w-full">
-          <label className={labelBase}>Runway (meses)</label>
+          <label className={labelBase}>
+            Runway (meses) <Star show={isReq("runwayMonths")} />
+          </label>
           <input
             type="text"
             {...register("runwayMonths")}
@@ -85,7 +94,9 @@ export default function StepFive({
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 border-t border-slate-800 pt-8">
         <div className="relative">
-          <label className={labelBase}>Finalidade do capital</label>
+          <label className={labelBase}>
+            Finalidade do capital <Star show={isReq("capitalUse")} />
+          </label>
           <div className="rounded-xl border border-slate-700 bg-[#030712] p-3 h-40">
             <div className="grid grid-cols-1 gap-2 text-sm text-slate-200">
               {[
@@ -112,6 +123,7 @@ export default function StepFive({
         <div>
           <label className={labelBase}>
             Plano de uso do capital (defesa breve)
+            <Star show={isReq("capitalPlan")} />
           </label>
           <textarea
             {...register("capitalPlan")}

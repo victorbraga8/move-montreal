@@ -2,14 +2,19 @@ import { maskCurrencyClamped, maskDigitsOnly, maskInteger, maskPercent, MAX_MRR_
 import type { AnyObj } from "@/types";
 import { ChevronDown } from "lucide-react";
 
-export default function StepThree({ labelBase, register, inputBase, errors, FieldError, setValue, stage, model, psfEvidence, pilotType }: AnyObj) {
+export default function StepThree({ labelBase, requiredFields, register, inputBase, errors, FieldError, setValue, stage, model, psfEvidence, pilotType }: AnyObj) {
+  const isReq = (name: string) => Array.isArray(requiredFields) && requiredFields.includes(name);
+  const Star = ({ show }: { show: boolean }) => (show ? <span className="ml-1 text-amber-300">*</span> : null);
   return (
     <div className="space-y-5 sm:space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
       {/* IDEIA */}
       {stage === "Ideia" && (
         <div className="space-y-5">
           <div>
-            <label className={labelBase}>Quantas entrevistas com potenciais clientes?</label>
+            <label className={labelBase}>
+              Quantas entrevistas com potenciais clientes?
+              <Star show={isReq("interviewsCount")} />
+            </label>
             <input
               type="text"
               {...register("interviewsCount")}
@@ -23,7 +28,10 @@ export default function StepThree({ labelBase, register, inputBase, errors, Fiel
           </div>
 
           <div>
-            <label className={labelBase}>Qual hipótese foi validada?</label>
+            <label className={labelBase}>
+              Qual hipótese foi validada?
+              <Star show={isReq("validatedHypothesis")} />
+            </label>
             <textarea
               {...register("validatedHypothesis")}
               rows={4}
@@ -35,7 +43,10 @@ export default function StepThree({ labelBase, register, inputBase, errors, Fiel
 
           {model === "B2C" ? (
             <div>
-              <label className={labelBase}>Público / segmento</label>
+              <label className={labelBase}>
+                Público / segmento
+                <Star show={isReq("audience")} />
+              </label>
               <input
                 type="text"
                 {...register("audience")}
@@ -46,7 +57,10 @@ export default function StepThree({ labelBase, register, inputBase, errors, Fiel
             </div>
           ) : (
             <div>
-              <label className={labelBase}>ICP (perfil de cliente ideal)</label>
+              <label className={labelBase}>
+                ICP (perfil de cliente ideal)
+                <Star show={isReq("icp")} />
+              </label>
               <input
                 type="text"
                 {...register("icp")}
@@ -74,7 +88,10 @@ export default function StepThree({ labelBase, register, inputBase, errors, Fiel
       {stage === "MVP" && (
         <div className="space-y-5">
           <div className="relative">
-            <label className={labelBase}>Evidência de PSF (Product–Solution Fit)</label>
+            <label className={labelBase}>
+              Evidência de PSF (Product–Solution Fit)
+              <Star show={isReq("psfEvidence")} />
+            </label>
             <select
               {...register("psfEvidence")}
               className="w-full bg-[#030712] border border-slate-700 rounded-xl px-4 sm:px-5 py-3 sm:py-3.5 text-white focus:outline-none focus:border-cyan-500 appearance-none"
@@ -91,7 +108,10 @@ export default function StepThree({ labelBase, register, inputBase, errors, Fiel
           {(model === "B2B" || model === "B2B2C" || model === "B2C") && (psfEvidence === "piloto_nao_pago" || psfEvidence === "piloto_pago") && (
             <>
               <div className="relative">
-                <label className={labelBase}>Status do piloto</label>
+                <label className={labelBase}>
+                  Status do piloto
+                  <Star show={isReq("pilotType")} />
+                </label>
                 <select
                   {...register("pilotType")}
                   className="w-full bg-[#030712] border border-slate-700 rounded-xl px-4 sm:px-5 py-3 sm:py-3.5 text-white focus:outline-none focus:border-cyan-500 appearance-none"
@@ -107,6 +127,7 @@ export default function StepThree({ labelBase, register, inputBase, errors, Fiel
               <div>
                 <label className={labelBase}>
                   {pilotType === "planejado" ? "Objetivo do piloto (o que você pretende validar)" : "Resumo do piloto / aprendizado"}
+                  <Star show={isReq("pilotSummary")} />
                 </label>
                 <textarea
                   {...register("pilotSummary")}
@@ -126,7 +147,10 @@ export default function StepThree({ labelBase, register, inputBase, errors, Fiel
           {model === "B2C" && (
             <div className="space-y-5">
               <div>
-                <label className={labelBase}>Público / segmento</label>
+                <label className={labelBase}>
+                  Público / segmento
+                  <Star show={isReq("audience")} />
+                </label>
                 <input
                   type="text"
                   {...register("audience")}
@@ -136,7 +160,10 @@ export default function StepThree({ labelBase, register, inputBase, errors, Fiel
                 <FieldError path="audience" />
               </div>
               <div>
-                <label className={labelBase}>MAU (usuários ativos no mês)</label>
+                <label className={labelBase}>
+                  MAU (usuários ativos no mês)
+                  <Star show={isReq("mau")} />
+                </label>
                 <input
                   type="text"
                   {...register("mau")}
@@ -149,7 +176,10 @@ export default function StepThree({ labelBase, register, inputBase, errors, Fiel
               </div>
 
               <div>
-                <label className={labelBase}>Canal inicial de aquisição</label>
+                <label className={labelBase}>
+                  Canal inicial de aquisição
+                  <Star show={isReq("primaryChannel")} />
+                </label>
                 <input
                   type="text"
                   {...register("primaryChannel")}
@@ -164,7 +194,10 @@ export default function StepThree({ labelBase, register, inputBase, errors, Fiel
           {(model === "B2B" || model === "B2B2C") && (
             <>
               <div>
-                <label className={labelBase}>ICP (perfil de cliente ideal)</label>
+                <label className={labelBase}>
+                  ICP (perfil de cliente ideal)
+                  <Star show={isReq("icp")} />
+                </label>
                 <input
                   type="text"
                   {...register("icp")}
@@ -175,7 +208,10 @@ export default function StepThree({ labelBase, register, inputBase, errors, Fiel
               </div>
 
               <div>
-                <label className={labelBase}>ACV (ticket anual estimado)</label>
+                <label className={labelBase}>
+                  ACV (ticket anual estimado)
+                  <Star show={isReq("acv")} />
+                </label>
                 <input
                   type="text"
                   {...register("acv")}
@@ -202,7 +238,10 @@ export default function StepThree({ labelBase, register, inputBase, errors, Fiel
         <div className="space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
-              <label className={labelBase}>MRR (Receita Recorrente Mensal)</label>
+              <label className={labelBase}>
+                MRR (Receita Recorrente Mensal)
+                <Star show={isReq("mrr")} />
+              </label>
               <input
                 type="text"
                 {...register("mrr")}
@@ -221,7 +260,10 @@ export default function StepThree({ labelBase, register, inputBase, errors, Fiel
             </div>
 
             <div>
-              <label className={labelBase}>Crescimento (últimos 3 meses) %</label>
+              <label className={labelBase}>
+                Crescimento (últimos 3 meses) %
+                <Star show={isReq("growth3m")} />
+              </label>
               <input
                 type="text"
                 {...register("growth3m")}
@@ -253,7 +295,10 @@ export default function StepThree({ labelBase, register, inputBase, errors, Fiel
 
             {(model === "B2B" || model === "B2B2C") ? (
               <div>
-                <label className={labelBase}>ACV (ticket anual)</label>
+                <label className={labelBase}>
+                  ACV (ticket anual)
+                  <Star show={isReq("acv")} />
+                </label>
                 <input
                   type="text"
                   {...register("acv")}
@@ -272,7 +317,10 @@ export default function StepThree({ labelBase, register, inputBase, errors, Fiel
               </div>
             ) : (
               <div>
-                <label className={labelBase}>MAU (usuários ativos no mês)</label>
+                <label className={labelBase}>
+                  MAU (usuários ativos no mês)
+                  <Star show={isReq("mau")} />
+                </label>
                 <input
                   type="text"
                   {...register("mau")}
@@ -288,7 +336,10 @@ export default function StepThree({ labelBase, register, inputBase, errors, Fiel
 
           {(model === "B2B" || model === "B2B2C") && (
             <div>
-              <label className={labelBase}>ICP (perfil de cliente ideal)</label>
+              <label className={labelBase}>
+                ICP (perfil de cliente ideal)
+                <Star show={isReq("icp")} />
+              </label>
               <input
                 type="text"
                 {...register("icp")}
@@ -300,7 +351,10 @@ export default function StepThree({ labelBase, register, inputBase, errors, Fiel
           )}
 
           <div>
-            <label className={labelBase}>Canal principal de aquisição</label>
+            <label className={labelBase}>
+              Canal principal de aquisição
+              <Star show={isReq("primaryChannel")} />
+            </label>
             <input
               type="text"
               {...register("primaryChannel")}

@@ -2,11 +2,15 @@ import { maskPhone } from "@/provider/helpers";
 import type { AnyObj } from "@/types";
 import { ChevronDown, Plus, Trash2 } from "lucide-react";
 
-export default function StepOne({ labelBase, register, inputBase, errors, FieldError, formValues, founderFields, appendFounder, setValue, removeFounder }: AnyObj) {
+export default function StepOne({ labelBase, requiredFields, register, inputBase, errors, FieldError, formValues, founderFields, appendFounder, setValue, removeFounder }: AnyObj) {
+  const isReq = (name: string) => Array.isArray(requiredFields) && requiredFields.includes(name);
+  const Star = ({ show }: { show: boolean }) => (show ? <span className="ml-1 text-amber-300">*</span> : null);
   return (
     <div className="space-y-5 sm:space-y-6 animate-in fade-in slide-in-from-left-4 duration-300">
       <div>
-        <label className={labelBase}>Nome da Startup</label>
+        <label className={labelBase}>
+          Nome da Startup <Star show={isReq("startupName")} />
+        </label>
         <input
           type="text"
           {...register("startupName")}
@@ -18,7 +22,9 @@ export default function StepOne({ labelBase, register, inputBase, errors, FieldE
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="relative">
-          <label className={labelBase}>Área / Atuação</label>
+          <label className={labelBase}>
+            Área / Atuação <Star show={isReq("vertical")} />
+          </label>
           <select
             {...register("vertical")}
             className="w-full bg-[#030712] border border-slate-700 rounded-xl px-4 sm:px-5 py-3 sm:py-3.5 text-white focus:outline-none focus:border-cyan-500 appearance-none"
@@ -41,7 +47,9 @@ export default function StepOne({ labelBase, register, inputBase, errors, FieldE
 
         {formValues?.vertical === "Outros" && (
           <div>
-            <label className={labelBase}>Qual?</label>
+            <label className={labelBase}>
+              Qual? <Star show={isReq("verticalOther")} />
+            </label>
             <input
               type="text"
               {...register("verticalOther")}
@@ -75,7 +83,9 @@ export default function StepOne({ labelBase, register, inputBase, errors, FieldE
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
-              <label className="block text-xs text-slate-400 mb-1 font-bold">Nome Completo</label>
+              <label className="block text-xs text-slate-400 mb-1 font-bold">
+                Nome Completo <Star show={isReq("founders")} />
+              </label>
               <input
                 type="text"
                 {...register(`founders.${index}.name`)}
@@ -86,7 +96,9 @@ export default function StepOne({ labelBase, register, inputBase, errors, FieldE
             </div>
 
             <div>
-              <label className="block text-xs text-slate-400 mb-1 font-bold">E-mail</label>
+              <label className="block text-xs text-slate-400 mb-1 font-bold">
+                E-mail <Star show={isReq("founders")} />
+              </label>
               <input
                 type="email"
                 {...register(`founders.${index}.email`)}
@@ -97,7 +109,9 @@ export default function StepOne({ labelBase, register, inputBase, errors, FieldE
             </div>
 
             <div>
-              <label className="block text-xs text-slate-400 mb-1 font-bold">Telefone (WhatsApp)</label>
+              <label className="block text-xs text-slate-400 mb-1 font-bold">
+                Telefone (WhatsApp) <Star show={isReq("founders")} />
+              </label>
               <input
                 type="tel"
                 {...register(`founders.${index}.phone`)}

@@ -46,6 +46,16 @@ export function useStepForms() {
 
   const currentStepFields = useMemo(() => getCurrentStepFields(formValues), [formValues?.stage, formValues?.model, formValues?.psfEvidence, formValues?.teamComposition]);
 
+  const activeStepFields = useMemo(() => currentStepFields[step] || [], [currentStepFields, step]);
+
+  const canProceed = useMemo(() => {
+    if (!activeStepFields.length) return true;
+    const parsed = formSchema.safeParse(formValues);
+    if (parsed.success) return true;
+    const invalidTopKeys = new Set(parsed.error.issues.map((i) => String(i.path?.[0] ?? "")));
+    return activeStepFields.every((k) => !invalidTopKeys.has(String(k)));
+  }, [activeStepFields, formValues]);
+
   useEffect(() => {
     const draft = loadDraft<FormData>(DRAFT_KEY);
     if (draft) reset(draft);
@@ -212,6 +222,7 @@ export function useStepForms() {
     setLoadingStage,
     stepTitles,
     currentStepFields,
+    canProceed,
     founderFields,
     appendFounder,
     removeFounder,

@@ -1,12 +1,16 @@
 import type { AnyObj } from "@/types";
 import { ChevronDown } from "lucide-react";
 
-export default function StepTwo({ labelBase, register, inputBase, errors, FieldError }: AnyObj) {
+export default function StepTwo({ labelBase, requiredFields, register, inputBase, errors, FieldError }: AnyObj) {
+  const isReq = (name: string) => Array.isArray(requiredFields) && requiredFields.includes(name);
+  const Star = ({ show }: { show: boolean }) => (show ? <span className="ml-1 text-amber-300">*</span> : null);
   return (
     <div className="space-y-5 sm:space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
         <div className="relative">
-          <label className={labelBase}>Modelo</label>
+          <label className={labelBase}>
+            Modelo <Star show={isReq("model")} />
+          </label>
           <select
             {...register("model")}
             className="w-full bg-[#030712] border border-slate-700 rounded-xl px-4 sm:px-5 py-3 sm:py-3.5 text-white focus:outline-none focus:border-cyan-500 appearance-none"
@@ -20,7 +24,9 @@ export default function StepTwo({ labelBase, register, inputBase, errors, FieldE
         </div>
 
         <div className="relative">
-          <label className={labelBase}>Estágio</label>
+          <label className={labelBase}>
+            Estágio <Star show={isReq("stage")} />
+          </label>
           <select
             {...register("stage")}
             className="w-full bg-[#030712] border border-slate-700 rounded-xl px-4 sm:px-5 py-3 sm:py-3.5 text-white focus:outline-none focus:border-cyan-500 appearance-none"
@@ -35,7 +41,9 @@ export default function StepTwo({ labelBase, register, inputBase, errors, FieldE
       </div>
 
       <div>
-        <label className={labelBase}>Cliente-alvo</label>
+        <label className={labelBase}>
+          Cliente-alvo <Star show={isReq("targetCustomer")} />
+        </label>
         <input
           type="text"
           {...register("targetCustomer")}
@@ -46,7 +54,9 @@ export default function StepTwo({ labelBase, register, inputBase, errors, FieldE
       </div>
       <div className="grid md:grid-cols-2 gap-6 grid-cols-1">
         <div>
-          <label className={labelBase}>Proposta de valor</label>
+          <label className={labelBase}>
+            Proposta de valor <Star show={isReq("valueProp")} />
+          </label>
           <textarea
             {...register("valueProp")}
             rows={3}
@@ -56,7 +66,9 @@ export default function StepTwo({ labelBase, register, inputBase, errors, FieldE
           <FieldError path="valueProp" />
         </div>
         <div>
-          <label className={labelBase}>Urgência atendida</label>
+          <label className={labelBase}>
+            Urgência atendida <Star show={isReq("painUrgency")} />
+          </label>
           <textarea
             {...register("painUrgency")}
             rows={3}

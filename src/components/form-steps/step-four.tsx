@@ -3,17 +3,22 @@ import { ChevronDown } from "lucide-react";
 
 export default function StepFour({
   labelBase,
+  requiredFields,
   register,
   inputBase,
   errors,
   FieldError,
   teamComposition,
 }: AnyObj) {
+  const isReq = (name: string) => Array.isArray(requiredFields) && requiredFields.includes(name);
+  const Star = ({ show }: { show: boolean }) => (show ? <span className="ml-1 text-amber-300">*</span> : null);
   return (
     <div className="space-y-5 sm:space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div className="relative">
-          <label className={labelBase}>Dedicação semanal</label>
+          <label className={labelBase}>
+            Dedicação semanal <Star show={isReq("weeklyDedication")} />
+          </label>
           <select
             {...register("weeklyDedication")}
             className="w-full bg-[#030712] border border-slate-700 rounded-xl px-4 sm:px-5 py-3 sm:py-3.5 text-white focus:outline-none focus:border-cyan-500 appearance-none"
@@ -30,7 +35,9 @@ export default function StepFour({
         </div>
 
         <div className="relative">
-          <label className={labelBase}>Time</label>
+          <label className={labelBase}>
+            Time <Star show={isReq("teamComposition")} />
+          </label>
           <select
             {...register("teamComposition")}
             className="w-full bg-[#030712] border border-slate-700 rounded-xl px-4 sm:px-5 py-3 sm:py-3.5 text-white focus:outline-none focus:border-cyan-500 appearance-none"
@@ -47,7 +54,9 @@ export default function StepFour({
 
       {teamComposition && teamComposition !== "solo" && (
         <div className="relative">
-          <label className={labelBase}>Tamanho do time (estimado)</label>
+          <label className={labelBase}>
+            Tamanho do time (estimado) <Star show={isReq("teamSize")} />
+          </label>
           <select
             {...register("teamSize")}
             className="w-full bg-[#030712] border border-slate-700 rounded-xl px-4 sm:px-5 py-3 sm:py-3.5 text-white focus:outline-none focus:border-cyan-500 appearance-none"
@@ -67,7 +76,9 @@ export default function StepFour({
       )}
 
       <div>
-        <label className={labelBase}>Gap de execução atual</label>
+        <label className={labelBase}>
+          Gap de execução atual <Star show={isReq("executionBottleneck")} />
+        </label>
         <textarea
           {...register("executionBottleneck")}
           rows={4}
